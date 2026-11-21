@@ -1,7 +1,7 @@
 import { ME, POSITIONS, USERS } from '../data/mock.js'
 import DeptSelect from './DeptSelect.jsx'
 import { cleanInstagram, instaUrl, SKILL_LEVELS } from '../lib/util.js'
-import { loadMyProfileExtras, setNotePublic, waSendCode, waVerifyCode } from '../lib/api.js'
+import { loadMyProfileExtras, setNotePublic } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
 import { KUDOS, KUDOS_BY_KEY } from '../lib/kudos.js'
 import { useEffect, useRef, useState } from 'react'
@@ -165,14 +165,18 @@ function sportLine(prefs) {
 function InfoEditor({ onSave, onCancel }) {
   const [name, setName] = useState(ME.name)
   const [dept, setDept] = useState(ME.dept || '')
+  const [phone, setPhone] = useState(ME.phone || '')
   const [instagram, setInstagram] = useState(ME.instagram || '')
   return (
-    <form className="info-edit" onSubmit={(e) => { e.preventDefault(); if (name.trim()) onSave({ name: name.trim(), dept: dept.trim(), instagram: cleanInstagram(instagram) }) }}>
+    <form className="info-edit" onSubmit={(e) => { e.preventDefault(); if (name.trim()) onSave({ name: name.trim(), dept: dept.trim(), phone: phone.trim(), instagram: cleanInstagram(instagram) }) }}>
       <label>Adın (diğerleri böyle görecek)
         <input value={name} maxLength={40} onChange={(e) => setName(e.target.value)} placeholder="Örn: Efe K." required />
       </label>
       <label>Bölümün
         <DeptSelect value={dept} onChange={setDept} />
+      </label>
+      <label>Telefon <small>(maç hatırlatmaları için)</small>
+        <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" />
       </label>
       <label>Instagram
         <div className="ig-input"><span>@</span><input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="kullanici.adi" autoCapitalize="none" autoCorrect="off" /></div>
@@ -182,67 +186,6 @@ function InfoEditor({ onSave, onCancel }) {
         <button className="btn primary">Kaydet</button>
       </div>
     </form>
-  )
-}
-
-// SMS ile telefon doğrulama (Twilio Verify)
-function PhoneVerify() {
-  const [verified, setVerified] = useState(ME.phoneVerified)
-  const [phone, setPhone] = useState(ME.phone || '')
-  const [step, setStep] = useState('phone') // phone | code
-  const [code, setCode] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState('')
-  const [info, setInfo] = useState('')
-
-  const send = async (e) => {
-    e?.preventDefault()
-    if (busy || !phone.trim()) return
-    setBusy(true); setErr(''); setInfo('')
-    try { await waSendCode(phone); setStep('code'); setCode(''); setInfo('Kod SMS ile gönderildi.') }
-    catch (x) { setErr(x.message) } finally { setBusy(false) }
-  }
-  const verify = async (e) => {
-    e.preventDefault()
-    if (busy || code.length < 6) return
-    setBusy(true); setErr('')
-    try { const o = await waVerifyCode(code); setPhone(o.phone || phone); setVerified(true) }
-    catch (x) { setErr(x.message) } finally { setBusy(false) }
-  }
-
-  if (verified) return (
-    <section className="panel verify-panel">
-      <div className="vp-ok">
-        <span className="vp-badge">✓ Numara doğrulandı</span>
-        <b>{ME.phone}</b>
-      </div>
-      <button type="button" className="link muted" onClick={() => { setVerified(false); setStep('phone'); setInfo(''); setErr('') }}>Numarayı değiştir</button>
-    </section>
-  )
-
-  return (
-    <section className="panel verify-panel">
-      <h2>Telefon doğrulama</h2>
-      <p className="meta small">Numaranı SMS ile doğrula: hatırlatma ve bildirimler buraya gelir, ayrıca her numaraya tek hesap açılır.</p>
-      {step === 'phone' ? (
-        <form onSubmit={send} className="vp-form">
-          <input type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" />
-          <button className="btn primary" disabled={busy || !phone.trim()}>{busy ? 'Gönderiliyor…' : 'SMS ile kod gönder'}</button>
-        </form>
-      ) : (
-        <form onSubmit={verify} className="vp-form">
-          <p className="meta small"><b>{phone}</b> numarasına SMS ile 6 haneli kod gönderdik.</p>
-          <input className="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} placeholder="••••••" autoFocus />
-          <button className="btn primary" disabled={busy || code.length < 6}>{busy ? 'Kontrol ediliyor…' : 'Doğrula'}</button>
-          <div className="row-links">
-            <button type="button" className="link" onClick={() => { setStep('phone'); setErr(''); setInfo('') }}>Numarayı değiştir</button>
-            <button type="button" className="link" onClick={send} disabled={busy}>Kodu tekrar gönder</button>
-          </div>
-        </form>
-      )}
-      {info && !err && <p className="ok">{info}</p>}
-      {err && <p className="err">{err}</p>}
-    </section>
   )
 }
 
@@ -275,8 +218,6 @@ export default function Profile({ prefs, onPrefs, onSaveInfo, email, onLogout })
           )}
         </div>
       </section>
-
-      <PhoneVerify />
 
       <section className={'trust-panel trust-' + t.key}>
         <div className="tp-score">

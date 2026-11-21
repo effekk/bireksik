@@ -10,7 +10,6 @@ export const ME = {
   played: 0,
   cancels: 0,
   phone: '',
-  phoneVerified: false,
   instagram: '',
   kudos: {},
 }
