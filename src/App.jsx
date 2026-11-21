@@ -150,6 +150,13 @@ function MainApp({ profile, setProfile, email }) {
     }).eq('id', profile.id)
     if (error) setToast('Kaydedilemedi: ' + trError(error))
   }
+  // Yeni ilan bildirim tercihi (padel / halı saha)
+  const setAlert = async (sport, value) => {
+    const col = sport === 'padel' ? 'alert_padel' : 'alert_halisaha'
+    const { data, error } = await supabase.from('profiles').update({ [col]: value }).eq('id', profile.id).select().single()
+    if (error) return setToast('Kaydedilemedi: ' + trError(error))
+    setProfile(data)
+  }
   const saveInfo = async ({ name, age, gender, phone, instagram }) => {
     const { data, error } = await supabase.from('profiles')
       .update({ name, age: age ?? null, gender: gender || null, phone: phone || null, instagram: instagram || null })
@@ -317,7 +324,7 @@ function MainApp({ profile, setProfile, email }) {
       ? <Kudos key={pm.id} match={pm} done={!!kudosDone[pm.id] || pm.given} reports={reports[pm.id] || []} onSubmit={submitKudos} onReport={report} />
       : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
   } else if (route.page === 'olustur') body = <CreateMatch onCreate={addMatch} />
-  else if (route.page === 'profil') body = <Profile prefs={prefs} onPrefs={setPrefs} onSaveInfo={saveInfo} email={email} onLogout={logout} />
+  else if (route.page === 'profil') body = <Profile prefs={prefs} onPrefs={setPrefs} onSaveInfo={saveInfo} alerts={{ padel: !!profile.alert_padel, halisaha: !!profile.alert_halisaha }} onAlert={setAlert} email={email} onLogout={logout} />
   else if (route.page === 'kisiler') body = <People onOpen={(id) => go('kisi-' + id)} />
   else if (route.page === 'person') body = <PublicProfile key={route.id} id={route.id} myMatches={matches.filter((m) => m.host === ME.id)} onOffer={sendOffer} onInvite={sendInvite} busy={busy} />
   else if (route.page === 'teklifler') body = <Offers incoming={offers.incoming} outgoing={offers.outgoing} onRespond={answerOffer} onCancel={withdrawOffer} busy={busy} />

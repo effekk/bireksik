@@ -197,7 +197,27 @@ function InfoEditor({ onSave, onCancel }) {
   )
 }
 
-export default function Profile({ prefs, onPrefs, onSaveInfo, email, onLogout }) {
+// Yeni ilan bildirim tercihleri
+function AlertPrefs({ alerts, onAlert }) {
+  return (
+    <section className="panel">
+      <h2>İlan bildirimleri</h2>
+      <p className="meta small">Seçtiğin sporda yeni bir maç açılınca sana bildirim ve e-posta gönderelim. İstediğin zaman buradan kapatabilirsin.</p>
+      <div className="alert-list">
+        <label className="alert-row">
+          <span>🎾 Yeni <b>padel</b> ilanları açılınca haber ver</span>
+          <input type="checkbox" checked={!!alerts.padel} onChange={(e) => onAlert('padel', e.target.checked)} />
+        </label>
+        <label className="alert-row">
+          <span>⚽ Yeni <b>halı saha</b> ilanları açılınca haber ver</span>
+          <input type="checkbox" checked={!!alerts.halisaha} onChange={(e) => onAlert('halisaha', e.target.checked)} />
+        </label>
+      </div>
+    </section>
+  )
+}
+
+export default function Profile({ prefs, onPrefs, onSaveInfo, alerts = {}, onAlert = () => {}, email, onLogout }) {
   const [editing, setEditing] = useState(false)
   const [notes, setNotes] = useState([])
   const [history, setHistory] = useState([])
@@ -242,6 +262,8 @@ export default function Profile({ prefs, onPrefs, onSaveInfo, email, onLogout })
       </section>
 
       <SportPrefs prefs={prefs} onChange={onPrefs} />
+
+      <AlertPrefs alerts={alerts} onAlert={onAlert} />
 
       <KudosPanel notes={notes} setNotes={setNotes} />
 
