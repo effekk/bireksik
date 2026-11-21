@@ -1,5 +1,5 @@
-// WhatsApp doğrulama kodu gönder — tek dosya (panelden yapıştırılabilir)
-// Secret'lar: WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_TEMPLATE, WHATSAPP_LANG (ops.)
+// SMS doğrulama kodu gönder — Twilio Verify (hat/numara gerektirmez)
+// Secret'lar: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SID
 // SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY otomatik gelir.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -37,47 +37,35 @@ Deno.serve(async (req) => {
 
     const admin = createClient(url, service)
 
+    // Bir numaraya tek hesap
     const { data: taken } = await admin.from('profiles')
       .select('id').eq('phone', e164).eq('phone_verified', true).neq('id', user.id).maybeSingle()
     if (taken) return json({ error: 'Bu numara başka bir hesapta kayıtlı.' }, 409)
 
+    // 60 sn hız sınırı
     const { data: prev } = await admin.from('phone_otp').select('last_sent').eq('user_id', user.id).maybeSingle()
     if (prev && Date.now() - new Date(prev.last_sent).getTime() < 60_000)
       return json({ error: 'Çok sık denedin, bir dakika bekle.' }, 429)
 
-    const code = String(Math.floor(100000 + Math.random() * 900000))
-    const expires = new Date(Date.now() + 5 * 60_000).toISOString()
-    const { error: upErr } = await admin.from('phone_otp').upsert({
-      user_id: user.id, phone: e164, code, expires_at: expires, attempts: 0, last_sent: new Date().toISOString(),
-    })
-    if (upErr) return json({ error: 'Kayıt hatası.' }, 500)
-
-    const token = Deno.env.get('WHATSAPP_TOKEN')!
-    const phoneId = Deno.env.get('WHATSAPP_PHONE_ID')!
-    const template = Deno.env.get('WHATSAPP_TEMPLATE') || 'bireksik_dogrulama'
-    const lang = Deno.env.get('WHATSAPP_LANG') || 'tr'
-
-    const waRes = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+    // Twilio Verify — kodu Twilio gönderir
+    const sid = Deno.env.get('TWILIO_ACCOUNT_SID')!
+    const tok = Deno.env.get('TWILIO_AUTH_TOKEN')!
+    const vsid = Deno.env.get('TWILIO_VERIFY_SID')!
+    const r = await fetch(`https://verify.twilio.com/v2/Services/${vsid}/Verifications`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: e164.replace('+', ''),
-        type: 'template',
-        template: {
-          name: template,
-          language: { code: lang },
-          components: [
-            { type: 'body', parameters: [{ type: 'text', text: code }] },
-            { type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: code }] },
-          ],
-        },
-      }),
+      headers: { Authorization: 'Basic ' + btoa(`${sid}:${tok}`), 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ To: e164, Channel: 'sms' }),
     })
-    if (!waRes.ok) {
-      console.error('WA error', waRes.status, await waRes.text())
-      return json({ error: 'WhatsApp mesajı gönderilemedi. Numaranı ve WhatsApp kurulumunu kontrol et.' }, 502)
+    if (!r.ok) {
+      console.error('Twilio start error', r.status, await r.text())
+      return json({ error: 'SMS gönderilemedi. Numaranı kontrol et ya da biraz sonra dene.' }, 502)
     }
+
+    // Hangi numaraya kod gittiğini sakla (doğrulama adımı için) — kodu Twilio tutar
+    const expires = new Date(Date.now() + 10 * 60_000).toISOString()
+    await admin.from('phone_otp').upsert({
+      user_id: user.id, phone: e164, code: '-', expires_at: expires, attempts: 0, last_sent: new Date().toISOString(),
+    })
     return json({ ok: true })
   } catch (e) {
     console.error(e)

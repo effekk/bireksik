@@ -185,7 +185,7 @@ function InfoEditor({ onSave, onCancel }) {
   )
 }
 
-// WhatsApp ile telefon doğrulama
+// SMS ile telefon doğrulama (Twilio Verify)
 function PhoneVerify() {
   const [verified, setVerified] = useState(ME.phoneVerified)
   const [phone, setPhone] = useState(ME.phone || '')
@@ -199,7 +199,7 @@ function PhoneVerify() {
     e?.preventDefault()
     if (busy || !phone.trim()) return
     setBusy(true); setErr(''); setInfo('')
-    try { await waSendCode(phone); setStep('code'); setCode(''); setInfo('Kod WhatsApp’tan gönderildi.') }
+    try { await waSendCode(phone); setStep('code'); setCode(''); setInfo('Kod SMS ile gönderildi.') }
     catch (x) { setErr(x.message) } finally { setBusy(false) }
   }
   const verify = async (e) => {
@@ -213,7 +213,7 @@ function PhoneVerify() {
   if (verified) return (
     <section className="panel verify-panel">
       <div className="vp-ok">
-        <span className="vp-badge">✓ WhatsApp doğrulandı</span>
+        <span className="vp-badge">✓ Numara doğrulandı</span>
         <b>{ME.phone}</b>
       </div>
       <button type="button" className="link muted" onClick={() => { setVerified(false); setStep('phone'); setInfo(''); setErr('') }}>Numarayı değiştir</button>
@@ -223,15 +223,15 @@ function PhoneVerify() {
   return (
     <section className="panel verify-panel">
       <h2>Telefon doğrulama</h2>
-      <p className="meta small">Numaranı WhatsApp’tan doğrula: hatırlatma ve bildirimler oradan gelir, ayrıca her numaraya tek hesap açılır.</p>
+      <p className="meta small">Numaranı SMS ile doğrula: hatırlatma ve bildirimler buraya gelir, ayrıca her numaraya tek hesap açılır.</p>
       {step === 'phone' ? (
         <form onSubmit={send} className="vp-form">
           <input type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" />
-          <button className="btn primary" disabled={busy || !phone.trim()}>{busy ? 'Gönderiliyor…' : 'WhatsApp’tan kod gönder'}</button>
+          <button className="btn primary" disabled={busy || !phone.trim()}>{busy ? 'Gönderiliyor…' : 'SMS ile kod gönder'}</button>
         </form>
       ) : (
         <form onSubmit={verify} className="vp-form">
-          <p className="meta small"><b>{phone}</b> numarasına WhatsApp’tan 6 haneli kod gönderdik.</p>
+          <p className="meta small"><b>{phone}</b> numarasına SMS ile 6 haneli kod gönderdik.</p>
           <input className="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} placeholder="••••••" autoFocus />
           <button className="btn primary" disabled={busy || code.length < 6}>{busy ? 'Kontrol ediliyor…' : 'Doğrula'}</button>
           <div className="row-links">

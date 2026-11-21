@@ -1,4 +1,5 @@
-// WhatsApp doğrulama kodunu kontrol et ve numarayı onayla — tek dosya
+// SMS kodunu doğrula — Twilio Verify; başarılıysa numarayı onayla
+// Secret'lar: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SID
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const cors = {
@@ -24,17 +25,25 @@ Deno.serve(async (req) => {
     const { code } = await req.json().catch(() => ({ code: '' }))
     const admin = createClient(url, service)
 
-    const { data: otp } = await admin.from('phone_otp').select('*').eq('user_id', user.id).maybeSingle()
+    // Kod hangi numaraya gitmişti?
+    const { data: otp } = await admin.from('phone_otp').select('phone, expires_at').eq('user_id', user.id).maybeSingle()
     if (!otp || new Date(otp.expires_at).getTime() < Date.now())
       return json({ error: 'Kodun süresi doldu. Yeniden iste.' }, 400)
-    if (otp.attempts >= 5)
-      return json({ error: 'Çok fazla yanlış deneme. Yeni kod iste.' }, 429)
 
-    if (String(code) !== String(otp.code)) {
-      await admin.from('phone_otp').update({ attempts: otp.attempts + 1 }).eq('user_id', user.id)
-      return json({ error: 'Kod yanlış.' }, 400)
-    }
+    // Twilio Verify — kodu kontrol et
+    const sid = Deno.env.get('TWILIO_ACCOUNT_SID')!
+    const tok = Deno.env.get('TWILIO_AUTH_TOKEN')!
+    const vsid = Deno.env.get('TWILIO_VERIFY_SID')!
+    const r = await fetch(`https://verify.twilio.com/v2/Services/${vsid}/VerificationCheck`, {
+      method: 'POST',
+      headers: { Authorization: 'Basic ' + btoa(`${sid}:${tok}`), 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ To: otp.phone, Code: String(code) }),
+    })
+    const out = await r.json().catch(() => ({}))
+    if (!r.ok || out.status !== 'approved')
+      return json({ error: 'Kod yanlış ya da süresi doldu.' }, 400)
 
+    // Numarayı onayla (tekillik DB'de garanti)
     const { error: upErr } = await admin.from('profiles')
       .update({ phone: otp.phone, phone_verified: true }).eq('id', user.id)
     if (upErr) {
