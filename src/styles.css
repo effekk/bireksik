@@ -686,3 +686,38 @@ input[aria-invalid='true'] { border-color: var(--trust-low); }
 
 .foot-note { margin: 0; color: var(--muted); font-size: 14px; }
 .foot-note .link { color: var(--pitch); font-weight: 700; text-decoration: underline; }
+
+/* ---------- Misafir karşılama (landing) ---------- */
+.w-hero { background: linear-gradient(165deg, var(--pitch-deep), var(--pitch)); color: #fff; }
+.w-hero .wrap { padding-top: 30px; padding-bottom: 42px; }
+.w-hero h1 { font-size: clamp(32px, 7vw, 60px); margin: 14px 0 12px; line-height: 1.02; color: #fff; }
+.w-hero p { color: #ffffffe0; font-size: clamp(16px, 2.4vw, 19px); max-width: 46ch; margin: 0; }
+.w-live { display: inline-flex; align-items: center; gap: 8px; background: #ffffff1f; color: #fff; padding: 6px 13px; border-radius: 999px; font-weight: 600; font-size: 13px; }
+.w-live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ball); animation: wpulse 1.8s infinite; }
+@keyframes wpulse { 0% { box-shadow: 0 0 0 0 #e4f24b88; } 70% { box-shadow: 0 0 0 9px #e4f24b00; } 100% { box-shadow: 0 0 0 0 #e4f24b00; } }
+.w-cta { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 10px; }
+.g-btn.big { padding: 14px 24px; font-size: 16px; border-radius: 14px; }
+.w-mini { color: #ffffffb0; font-size: 13px; margin: 8px 0 0; }
+
+.w-steps { padding-top: 32px; padding-bottom: 6px; }
+.w-steps h2 { text-align: center; margin-bottom: 18px; }
+.w-step-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.w-step { background: var(--card, #fff); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; display: grid; gap: 5px; box-shadow: 0 2px 10px #0000000a; }
+.w-step i { font-size: 28px; font-style: normal; }
+.w-step b { font-size: 16px; }
+.w-step small { color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+.w-live-list { padding-top: 30px; padding-bottom: 8px; scroll-margin-top: 76px; }
+.w-live-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.w-live-head span { color: var(--muted); font-size: 13px; }
+.w-note { text-align: center; color: var(--muted); margin-top: 14px; font-size: 14px; }
+.w-note .link { color: var(--pitch); font-weight: 800; text-decoration: underline; }
+
+.w-final { background: var(--ball); margin-top: 28px; padding: 34px 0; text-align: center; }
+.w-final h2 { margin-bottom: 16px; color: var(--pitch-deep); font-size: clamp(22px, 3.5vw, 30px); }
+
+@media (min-width: 720px) {
+  .w-hero .wrap { padding-top: 56px; padding-bottom: 64px; }
+  .w-step-row { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .w-steps { padding-top: 44px; }
+}

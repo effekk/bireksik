@@ -10,7 +10,7 @@ const FILTERS = [
   { key: 'halisaha', label: 'Halı saha' },
 ]
 
-export default function Feed({ matches, onToggle, pending = [], reminders = [], onConfirm, onShare, mySports = ['padel', 'halisaha'] }) {
+export default function Feed({ matches, onToggle, pending = [], reminders = [], onConfirm, onShare, mySports = ['padel', 'halisaha'], hideHero = false }) {
   // Tek spor oynayan biri listeyi direkt o sporla görür (istersen filtreden değiştirebilir)
   const [filter, setFilter] = useState(mySports.length === 1 ? mySports[0] : 'all')
   const list = matches.filter((m) => filter === 'all' || m.sport === filter)
@@ -19,18 +19,20 @@ export default function Feed({ matches, onToggle, pending = [], reminders = [], 
 
   return (
     <>
-      <section className="hero">
-        <div>
-          {(ME.name || '').trim() && <p className="greet">Merhaba {ME.name.split(' ')[0]} 👋</p>}
-          <h1>Bir kişi mi eksik? BirEksik'te bulursun.</h1>
-          <p>Padele partner, rakip ya da halı sahaya eksik oyuncu.</p>
-        </div>
-        <div className="hero-stat">
-          <span>Bu hafta</span>
-          <span className="big">{open}</span>
-          <span>açık maç var</span>
-        </div>
-      </section>
+      {!hideHero && (
+        <section className="hero">
+          <div>
+            {(ME.name || '').trim() && <p className="greet">Merhaba {ME.name.split(' ')[0]} 👋</p>}
+            <h1>Bir kişi mi eksik? BirEksik'te bulursun.</h1>
+            <p>Padele partner, rakip ya da halı sahaya eksik oyuncu.</p>
+          </div>
+          <div className="hero-stat">
+            <span>Bu hafta</span>
+            <span className="big">{open}</span>
+            <span>açık maç var</span>
+          </div>
+        </section>
+      )}
 
       {reminders.map((m) => (
         <Reminder key={m.id} match={m} onConfirm={onConfirm} onCancel={onToggle} />

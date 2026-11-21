@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { loadPublic } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
 import { GuestContext } from '../lib/guest.js'
@@ -8,7 +8,7 @@ import MatchDetail from './MatchDetail.jsx'
 import Legal from './Legal.jsx'
 import Login from './Login.jsx'
 
-// Üye olmadan girilebilecek sayfalar: maç listesi ve maç detayı.
+// Üye olmadan girilebilecek sayfalar: karşılama + maç listesi, maç detayı, yasal metinler.
 // Diğer sayfalara (maç aç, profil, kişiler, teklifler) basınca üyeliğe yönlendiririz.
 function readGuestHash() {
   const h = window.location.hash.replace('#', '')
@@ -32,6 +32,53 @@ export default function GuestGate() {
   return <GuestApp onAuth={setAuthView} />
 }
 
+// Karşılama ekranı: hero + nasıl çalışır + canlı ilanlar + kapanış
+export function Landing({ matches, onAuth, prompt }) {
+  const listRef = useRef(null)
+  const toList = () => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  return (
+    <>
+      <section className="w-hero">
+        <div className="wrap">
+          <span className="w-live">Şu an İzmir'de {matches.length} açık maç</span>
+          <h1>Bir kişi mi eksik?<br />BirEksik'te bulursun.</h1>
+          <p>İzmir'de padel partnerini, rakibini ya da halı sahaya eksik oyuncunu dakikalar içinde bul.</p>
+          <div className="w-cta">
+            <button type="button" className="g-btn solid big" onClick={() => onAuth('signup')}>Üye ol — ücretsiz</button>
+            <button type="button" className="g-btn ghost big" onClick={toList}>İlanlara göz at ↓</button>
+          </div>
+          <p className="w-mini">30 saniyede hesap · Üyelik ücretsiz · Güven Puanı ile güvenli kadro</p>
+        </div>
+      </section>
+
+      <section className="w-steps wrap">
+        <h2>Nasıl çalışır?</h2>
+        <div className="w-step-row">
+          <div className="w-step"><i>🎾</i><b>Maç aç ya da bul</b><small>Padel veya halı saha — yerini ve saatini seç, ilanını aç.</small></div>
+          <div className="w-step"><i>👥</i><b>Kadronu doldur</b><small>Eksik oyuncular tek tek katılır; dolunca yedek sıraya geçer.</small></div>
+          <div className="w-step"><i>📍</i><b>Sahada buluş</b><small>WhatsApp grubu ve Güven Puanı ile güvenle oynayın.</small></div>
+        </div>
+      </section>
+
+      <section className="w-live-list wrap" ref={listRef}>
+        <div className="w-live-head">
+          <h2>Canlı ilanlar</h2>
+          <span>Tüm İzmir · ilçe ilçe sahalar</span>
+        </div>
+        <Feed hideHero matches={matches} onToggle={prompt} onShare={prompt} pending={[]} reminders={[]} onConfirm={prompt} mySports={['padel', 'halisaha']} />
+        <p className="w-note">Katılmak ve oyuncuların isimlerini görmek için <button className="link" onClick={() => onAuth('signup')}>üye ol</button>.</p>
+      </section>
+
+      <section className="w-final">
+        <div className="wrap">
+          <h2>Bu hafta sahadaki eksiği sen tamamla.</h2>
+          <button type="button" className="btn primary big" onClick={() => onAuth('signup')}>Hemen üye ol</button>
+        </div>
+      </section>
+    </>
+  )
+}
+
 function GuestApp({ onAuth }) {
   const [route, setRoute] = useState(readGuestHash)
   const [matches, setMatches] = useState([])
@@ -53,26 +100,32 @@ function GuestApp({ onAuth }) {
   }, [onAuth])
 
   const prompt = () => onAuth('signup')
-  const feed = (
-    <Feed matches={matches} onToggle={prompt} onShare={prompt} pending={[]} reminders={[]} onConfirm={prompt} mySports={['padel', 'halisaha']} />
-  )
 
   let body
-  if (!loaded) body = <div className="boot">Maçlar yükleniyor…</div>
-  else if (err) body = <div className="boot err"><p>{err}</p></div>
+  if (!loaded) body = <main className="wrap page"><div className="boot">Maçlar yükleniyor…</div></main>
+  else if (err && route.page === 'maclar') body = <main className="wrap page"><div className="boot err"><p>{err}</p></div></main>
   else if (route.page === 'detail') {
     const m = matches.find((x) => x.id === route.id)
-    body = m ? (
-      <>
-        <div className="guest-note">
-          👀 Katılımcıların isim ve bilgileri bulanık. Görüntülemek ve maça katılmak için üye olman gerekiyor.{' '}
-          <button className="link" onClick={prompt}>Üye ol</button>
-        </div>
-        <MatchDetail key={m.id} match={m} onToggle={prompt} onShare={prompt} onCancel={prompt} myPositions={[]} />
-      </>
-    ) : feed
-  } else if (route.page === 'legal') body = <Legal page={route.which} />
-  else body = feed
+    body = (
+      <main className="wrap page" key={'d' + route.id}>
+        {m ? (
+          <>
+            <div className="guest-note">
+              👀 Katılımcıların isim ve bilgileri bulanık. Görüntülemek ve maça katılmak için üye olman gerekiyor.{' '}
+              <button className="link" onClick={prompt}>Üye ol</button>
+            </div>
+            <MatchDetail key={m.id} match={m} onToggle={prompt} onShare={prompt} onCancel={prompt} myPositions={[]} />
+          </>
+        ) : (
+          <div className="boot"><p>Bu ilan artık yok ya da dolmuş olabilir. <button className="link" onClick={() => { window.location.hash = 'maclar' }}>İlanlara dön</button></p></div>
+        )}
+      </main>
+    )
+  } else if (route.page === 'legal') {
+    body = <main className="wrap page" key={route.which}><Legal page={route.which} /></main>
+  } else {
+    body = <div className="page" key="landing"><Landing matches={matches} onAuth={onAuth} prompt={prompt} /></div>
+  }
 
   return (
     <GuestContext.Provider value={true}>
@@ -85,17 +138,7 @@ function GuestApp({ onAuth }) {
           </div>
         </div>
       </header>
-      <div className="guest-banner">
-        <div className="wrap">
-          <span>Sadece bakıyorsun. Maça katılmak, maç açmak ve oyuncuları görmek için üye ol.</span>
-          <span className="guest-banner-cta">
-            <button type="button" className="link" onClick={() => onAuth('signup')}>Üye ol</button>
-            <span aria-hidden="true"> · </span>
-            <button type="button" className="link" onClick={() => onAuth('login')}>Giriş yap</button>
-          </span>
-        </div>
-      </div>
-      <main className="wrap page" key={route.page + (route.id || '')}>{body}</main>
+      {body}
       <footer className="foot wrap">
         <p className="foot-note">Öneri, istek ya da şikayetin mi var? <button type="button" className="link" onClick={() => onAuth('signup')}>Üye ol</button>, bize ileti bırak.</p>
         <nav className="foot-links">
