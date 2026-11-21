@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { dayLabel, loadPerson, timeLabel } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
-import { LEVELS, PLACES, USERS } from '../data/mock.js'
+import { LEVELS, USERS } from '../data/mock.js'
+import { VENUES } from '../data/venues.js'
+import VenueSelect from './VenueSelect.jsx'
 import { left, needText } from '../lib/match.js'
 import { instaUrl } from '../lib/util.js'
 import Avatar from './Avatar.jsx'
@@ -26,14 +28,15 @@ function OfferForm({ name, onSend, onClose, busy }) {
   const [sport, setSport] = useState('padel')
   const [day, setDay] = useState(isoDate(new Date()))
   const [time, setTime] = useState('19:00')
-  const [place, setPlace] = useState(PLACES.padel[0])
+  const [place, setPlace] = useState('')
   const [level, setLevel] = useState('Orta')
   const [size, setSize] = useState(14)
   const [note, setNote] = useState('')
 
-  const pickSport = (s) => { setSport(s); setPlace(PLACES[s][0]) }
+  const pickSport = (s) => { setSport(s); setPlace('') }
   const startsAt = new Date(`${day}T${time || '00:00'}`)
-  const ok = startsAt.getTime() > Date.now() + 5 * 60000
+  const timeOk = startsAt.getTime() > Date.now() + 5 * 60000
+  const ok = timeOk && place.trim()
 
   const submit = (e) => {
     e.preventDefault()
@@ -67,9 +70,7 @@ function OfferForm({ name, onSend, onClose, busy }) {
       </div>
       <div className="two">
         <label>Yer
-          <select value={place} onChange={(e) => setPlace(e.target.value)}>
-            {PLACES[sport].map((p) => <option key={p}>{p}</option>)}
-          </select>
+          <VenueSelect list={VENUES[sport]} value={place} onChange={setPlace} />
         </label>
         <label>Seviye
           <select value={level} onChange={(e) => setLevel(e.target.value)}>
@@ -80,7 +81,8 @@ function OfferForm({ name, onSend, onClose, busy }) {
       <label>Not (isteğe bağlı)
         <textarea rows={2} maxLength={200} placeholder="Örn: Raketim fazladan var, gelebilirsen süper" value={note} onChange={(e) => setNote(e.target.value)} />
       </label>
-      {!ok && <p className="err">İleri bir saat seç.</p>}
+      {!timeOk && <p className="err">İleri bir saat seç.</p>}
+      {timeOk && !place.trim() && <p className="err">Bir saha seç.</p>}
       <div className="row-end">
         <button type="button" className="link muted" onClick={onClose}>Vazgeç</button>
         <button className="btn primary" disabled={!ok || busy}>Teklifi gönder</button>

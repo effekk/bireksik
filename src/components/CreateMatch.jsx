@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { LEVELS, MODES, PLACES, POSITIONS } from '../data/mock.js'
+import { LEVELS, MODES, POSITIONS } from '../data/mock.js'
+import { VENUES } from '../data/venues.js'
+import VenueSelect from './VenueSelect.jsx'
 
 import { dayLabel } from '../lib/api.js'
 
@@ -25,13 +27,13 @@ export default function CreateMatch({ onCreate }) {
   const days = nextDays()
   const [f, setF] = useState({
     sport: 'padel', mode: 'players', day: isoDate(new Date()), time: '19:00',
-    place: PLACES.padel[0], level: 'Orta', size: 4, ready: 3, team: 2, minTrust: 0, note: '', wa: '', wanted: {},
+    place: '', level: 'Orta', size: 4, ready: 3, team: 2, minTrust: 0, note: '', wa: '', wanted: {},
   })
   const set = (k, v) => setF((s) => ({ ...s, [k]: v }))
   const num = (v) => Number(v) || 0
 
   const setSport = (sport) =>
-    setF((s) => ({ ...s, sport, mode: 'players', place: PLACES[sport][0], wanted: {}, ...DEFAULTS[sport] }))
+    setF((s) => ({ ...s, sport, mode: 'players', place: '', wanted: {}, ...DEFAULTS[sport] }))
 
   // Takım modunda maç büyüklüğü takım × 2; oyuncu modunda aranan = toplam − hazır
   const isTeam = f.mode === 'team'
@@ -44,7 +46,7 @@ export default function CreateMatch({ onCreate }) {
   const setWanted = (p, n) => setF((s) => ({ ...s, wanted: { ...s.wanted, [p]: Math.max(0, n) } }))
   const startsAt = new Date(`${f.day}T${f.time || '00:00'}`)
   const inFuture = startsAt.getTime() > Date.now() + 5 * 60000
-  const valid = seeking >= 1 && ready >= 1 && size >= 2 && posTotal <= seeking && inFuture
+  const valid = seeking >= 1 && ready >= 1 && size >= 2 && posTotal <= seeking && inFuture && f.place.trim()
 
   const waOk = f.wa === '' || /^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]+$/.test(f.wa.trim())
 
@@ -105,7 +107,7 @@ export default function CreateMatch({ onCreate }) {
           ? isTeam
             ? <>İlanda <b>{teamSize} kişilik bir rakip {f.sport === 'padel' ? 'ikili' : 'takım'}</b> aranacak. Maç toplam {size} kişi.</>
             : <>İlanda <b>{seeking} kişi</b> aranacak. Hazır olan {ready} kişinin uygulamadan katılmasına gerek yok.</>
-          : !inFuture ? 'Maç saati geçmiş görünüyor. İleri bir saat seç.' : posTotal > seeking ? `Aranan pozisyon sayısı (${posTotal}) aranan kişi sayısından (${seeking}) fazla olamaz.` : 'Hazır olan kişi sayısı toplamdan az olmalı.'}
+          : !inFuture ? 'Maç saati geçmiş görünüyor. İleri bir saat seç.' : posTotal > seeking ? `Aranan pozisyon sayısı (${posTotal}) aranan kişi sayısından (${seeking}) fazla olamaz.` : !f.place.trim() ? 'Bir saha seç (ilçe veya isimle arayabilirsin).' : 'Hazır olan kişi sayısı toplamdan az olmalı.'}
       </div>
 
       {usesPos && seeking >= 1 && (
@@ -145,9 +147,7 @@ export default function CreateMatch({ onCreate }) {
 
       <div className="two">
         <label>Yer
-          <select value={f.place} onChange={(e) => set('place', e.target.value)}>
-            {PLACES[f.sport].map((p) => <option key={p}>{p}</option>)}
-          </select>
+          <VenueSelect list={VENUES[f.sport]} value={f.place} onChange={(v) => set('place', v)} />
         </label>
         <label>Seviye
           <select value={f.level} onChange={(e) => set('level', e.target.value)}>
