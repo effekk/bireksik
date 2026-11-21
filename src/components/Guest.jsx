@@ -5,6 +5,7 @@ import { GuestContext } from '../lib/guest.js'
 import Logo from './Logo.jsx'
 import Feed from './Feed.jsx'
 import MatchDetail from './MatchDetail.jsx'
+import Legal from './Legal.jsx'
 import Login from './Login.jsx'
 
 // Üye olmadan girilebilecek sayfalar: maç listesi ve maç detayı.
@@ -12,7 +13,8 @@ import Login from './Login.jsx'
 function readGuestHash() {
   const h = window.location.hash.replace('#', '')
   if (h.startsWith('mac-')) return { page: 'detail', id: h.slice(4) }
-  if (['olustur', 'profil', 'kisiler', 'teklifler', 'takdir-'].some((p) => h === p || h.startsWith('takdir-'))) return { page: 'gated' }
+  if (['gizlilik', 'kvkk', 'kosullar'].includes(h)) return { page: 'legal', which: h }
+  if (['olustur', 'profil', 'kisiler', 'teklifler'].includes(h) || h.startsWith('takdir-')) return { page: 'gated' }
   return { page: 'maclar' }
 }
 
@@ -69,7 +71,8 @@ function GuestApp({ onAuth }) {
         <MatchDetail key={m.id} match={m} onToggle={prompt} onShare={prompt} onCancel={prompt} myPositions={[]} />
       </>
     ) : feed
-  } else body = feed
+  } else if (route.page === 'legal') body = <Legal page={route.which} />
+  else body = feed
 
   return (
     <GuestContext.Provider value={true}>
@@ -93,6 +96,15 @@ function GuestApp({ onAuth }) {
         </div>
       </div>
       <main className="wrap page" key={route.page + (route.id || '')}>{body}</main>
+      <footer className="foot wrap">
+        <p className="foot-note">Öneri, istek ya da şikayetin mi var? <button type="button" className="link" onClick={() => onAuth('signup')}>Üye ol</button>, bize ileti bırak.</p>
+        <nav className="foot-links">
+          <a href="#kosullar">Kullanım Koşulları</a>
+          <a href="#gizlilik">Gizlilik</a>
+          <a href="#kvkk">KVKK</a>
+        </nav>
+        <p className="foot-copy">© {new Date().getFullYear()} BirEksik · Bir kişi mi eksik? BirEksik'te bulursun.</p>
+      </footer>
     </GuestContext.Provider>
   )
 }
