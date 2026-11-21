@@ -26,6 +26,7 @@ h3 { font-size: 22px; font-weight: 700; }
 .nav a { padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 15px; color: #ffffffcc; }
 .nav a:hover { color: #fff; background: #ffffff14; }
 .nav a.on { color: var(--pitch-deep); background: var(--ball); }
+.nav-ico { display: none; }
 .me { display: flex; align-items: center; gap: 8px; }
 .me .trust { background: #ffffff1a; color: #fff; }
 
@@ -196,7 +197,26 @@ input[type='range'] { padding: 0; border: 0; accent-color: var(--pitch); }
 @media (max-width: 600px) {
   .top-in { gap: 8px; }
   .logo { font-size: 22px; }
-  .nav a { padding: 8px 10px; font-size: 14px; }
+  /* Menü alt sekme çubuğuna iner; üstte logo + bildirim + profil kalır */
+  .notif { margin-left: auto; }
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; margin: 0;
+    gap: 0; justify-content: space-around; align-items: stretch;
+    background: var(--pitch-deep); border-top: 1px solid #ffffff1f;
+    padding: 6px 2px calc(6px + env(safe-area-inset-bottom));
+  }
+  .nav a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 2px; border-radius: 12px; font-size: 11px; font-weight: 600;
+    color: #ffffffb3; min-width: 0;
+  }
+  .nav a:hover { background: transparent; color: #fff; }
+  .nav a.on { background: transparent; color: var(--ball); }
+  .nav-ico { display: block; }
+  .nav-ico svg { width: 25px; height: 25px; display: block; }
+  .nav-label { white-space: nowrap; }
+  .nav-badge { top: 0; right: 50%; margin-right: -15px; }
+  body { padding-bottom: calc(66px + env(safe-area-inset-bottom)); }
   .me .trust { display: none; }
   .card { flex-direction: column; align-items: stretch; padding: 14px; }
   .card-time { flex-direction: row; width: auto; border-right: 0; border-bottom: 2px dashed var(--line); padding-bottom: 10px; justify-content: flex-start; gap: 12px; }
@@ -204,7 +224,6 @@ input[type='range'] { padding: 0; border: 0; accent-color: var(--pitch); }
   .hero-stat .big { font-size: 48px; }
 }
 @media (max-width: 420px) {
-  .top-logo svg { display: none; }
   .two { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
