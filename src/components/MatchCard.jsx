@@ -39,7 +39,7 @@ export default function MatchCard({ match, onToggle, onShare }) {
   }
 
   return (
-    <article className={'card ' + match.sport}>
+    <article className={'card reveal ' + match.sport}>
       <a href={'#mac-' + match.id} className="card-main">
         <div className="card-time">
           <span className="time">{match.time}</span>

@@ -51,7 +51,7 @@ export function Landing({ matches, onAuth, prompt }) {
         </div>
       </section>
 
-      <section className="w-steps wrap">
+      <section className="w-steps wrap reveal">
         <h2>Nasıl çalışır?</h2>
         <div className="w-step-row">
           <div className="w-step"><i>🎾</i><b>Maç aç ya da bul</b><small>Padel veya halı saha — yerini ve saatini seç, ilanını aç.</small></div>
@@ -69,7 +69,7 @@ export function Landing({ matches, onAuth, prompt }) {
         <p className="w-note">Katılmak ve oyuncuların isimlerini görmek için <button className="link" onClick={() => onAuth('signup')}>üye ol</button>.</p>
       </section>
 
-      <section className="w-final">
+      <section className="w-final reveal">
         <div className="wrap">
           <h2>Bu hafta sahadaki eksiği sen tamamla.</h2>
           <button type="button" className="btn primary big" onClick={() => onAuth('signup')}>Hemen üye ol</button>
