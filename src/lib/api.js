@@ -1,7 +1,30 @@
 // Veritabanı ile konuşan bütün fonksiyonlar burada.
 // Veritabanındaki satırları, bileşenlerin kullandığı şekle çevirir.
-import { supabase } from './supabase.js'
+import { supabase, SUPABASE_KEY, SUPABASE_URL } from './supabase.js'
 import { ME, USERS } from '../data/mock.js'
+
+// Supabase Edge Function çağrısı (JWT ile). Hata gövdesini okunur döndürür.
+async function callFn(name, body) {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) throw new Error('Önce giriş yap.')
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_KEY },
+    body: JSON.stringify(body || {}),
+  })
+  const out = await res.json().catch(() => ({}))
+  if (!res.ok || out.error) throw new Error(out.error || 'İstek başarısız oldu.')
+  return out
+}
+
+// Telefon doğrulama (WhatsApp)
+export const waSendCode = (phone) => callFn('wa-send-code', { phone })
+export async function waVerifyCode(code) {
+  const out = await callFn('wa-verify-code', { code })
+  ME.phone = out.phone || ME.phone
+  ME.phoneVerified = true
+  return out
+}
 
 const KUDOS_WINDOW_H = 48
 const DAY_NAMES = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']

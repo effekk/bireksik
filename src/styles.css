@@ -627,3 +627,12 @@ input[aria-invalid='true'] { border-color: var(--trust-low); }
   .pp-badges { justify-content: center; }
   .or-side { align-items: flex-end; }
 }
+
+/* Telefon doğrulama paneli */
+.verify-panel h2 { margin: 0 0 4px; }
+.vp-form { display: grid; gap: 10px; margin-top: 12px; }
+.vp-form input { width: 100%; }
+.vp-form input.code { letter-spacing: 8px; text-align: center; font-size: 22px; font-weight: 700; }
+.vp-ok { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.vp-badge { display: inline-block; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--trust-good) 18%, var(--bg)); color: var(--trust-good); font-weight: 800; font-size: 14px; }
+.verify-panel .ok { color: var(--trust-good); font-weight: 600; }

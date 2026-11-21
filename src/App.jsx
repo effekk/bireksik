@@ -65,6 +65,7 @@ export default function App() {
         trust: data.trust,
         played: data.played,
         phone: data.phone || '',
+        phoneVerified: !!data.phone_verified,
         instagram: data.instagram || '',
         photo: data.photo_url || undefined,
       })
@@ -143,9 +144,9 @@ function MainApp({ profile, setProfile, email }) {
     }).eq('id', profile.id)
     if (error) setToast('Kaydedilemedi: ' + trError(error))
   }
-  const saveInfo = async ({ name, dept, phone, instagram }) => {
+  const saveInfo = async ({ name, dept, instagram }) => {
     const { data, error } = await supabase.from('profiles')
-      .update({ name, dept, phone: phone || null, instagram: instagram || null })
+      .update({ name, dept, instagram: instagram || null })
       .eq('id', profile.id).select().single()
     if (error) return setToast('Kaydedilemedi: ' + trError(error))
     Object.assign(ME, { name: data.name, dept: data.dept, instagram: data.instagram || '' })
