@@ -1,0 +1,9 @@
+# Cloudflare'e tek komutla yayınlamak için ayar.
+# İlk sefer: npx wrangler login  (tarayıcıda onay ver)
+# Sonra her güncellemede: npm run deploy
+name = "bireksik"
+compatibility_date = "2026-01-01"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"

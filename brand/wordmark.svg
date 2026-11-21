@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="220" viewBox="0 0 860 220">
+  <g transform="translate(20,30)">
+    <rect width="160" height="160" rx="35" fill="#0e6b43"/>
+    <circle cx="52.5" cy="52.5" r="21.25" fill="#fff"/>
+    <circle cx="107.5" cy="52.5" r="21.25" fill="#fff"/>
+    <circle cx="52.5" cy="107.5" r="21.25" fill="#fff"/>
+    <circle cx="107.5" cy="107.5" r="20" fill="none" stroke="#e4f24b" stroke-width="8.5" stroke-dasharray="10 7.5"/>
+  </g>
+  <text x="210" y="148" font-family="Barlow Condensed SemiBold, Barlow Condensed" font-weight="600" font-size="150" fill="#0e3a26" letter-spacing="-2">Bir<tspan fill="#0e6b43">Eksik</tspan></text>
+</svg>
