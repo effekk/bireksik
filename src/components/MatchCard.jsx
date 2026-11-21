@@ -1,6 +1,7 @@
 import { ME, USERS } from '../data/mock.js'
 import Slots from './Slots.jsx'
 import TrustBadge from './TrustBadge.jsx'
+import { useGuest } from '../lib/guest.js'
 import { isFull, myJoin, needText, openPositions, title } from '../lib/match.js'
 
 export const SPORT = {
@@ -15,6 +16,7 @@ export const ShareIcon = () => (
 )
 
 export default function MatchCard({ match, onToggle, onShare }) {
+  const guest = useGuest()
   const joined = Boolean(myJoin(match, ME.id))
   const host = USERS[match.host]
   const full = isFull(match)
@@ -59,7 +61,7 @@ export default function MatchCard({ match, onToggle, onShare }) {
             </div>
           )}
           <p className="host">
-            Maçı açan: {host?.name} <TrustBadge score={host?.trust ?? 0} compact />
+            Maçı açan: {guest ? <span className="blurred-text">Bir üye</span> : host?.name} <TrustBadge score={host?.trust ?? 0} compact />
             {match.minTrust > 0 && <span className="min">en az {match.minTrust} puan</span>}
           </p>
         </div>

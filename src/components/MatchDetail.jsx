@@ -3,6 +3,7 @@ import { ME, USERS } from '../data/mock.js'
 import TrustBadge from './TrustBadge.jsx'
 import { SPORT, ShareIcon } from './MatchCard.jsx'
 import Avatar, { usePhotos } from './Avatar.jsx'
+import { useGuest } from '../lib/guest.js'
 import { topKudos } from '../lib/kudos.js'
 import { instaUrl } from '../lib/util.js'
 import { allSeats, freeSlots, isFull, left, myJoin, need, needText, openPositions, title } from '../lib/match.js'
@@ -136,6 +137,8 @@ function defaultPos(match, preferred) {
 }
 
 export default function MatchDetail({ match, onToggle, onShare, onCancel, myPositions = [] }) {
+  const guest = useGuest()
+  const nm = (name) => (guest ? <span className="blurred-text">Bir üye</span> : name)
   const [plus, setPlus] = useState(0)
   const [askCancel, setAskCancel] = useState(false)
   const usesPos = match.sport === 'halisaha' && match.mode !== 'team'
@@ -222,7 +225,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
             <li className="hostrow">
               <Avatar user={host} />
               <span className="who">
-                {host.name}{match.ready > 1 && <small> ve {match.ready - 1} arkadaşı</small>}
+                {nm(host.name)}{match.ready > 1 && <small> ve {match.ready - 1} arkadaşı</small>}
                 <em>Maçı açan · hazır</em>
               </span>
               <Ig user={host} />
@@ -235,7 +238,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
                 <li key={j.u}>
                   <Avatar user={u} />
                   <span className="who">
-                    {j.team ? <>{j.team}<small> · {u.name} (kaptan) · {j.plus + 1} kişi</small></> : <>{u.name}{j.plus > 0 && <small> + {j.plus} arkadaşı</small>}</>}
+                    {j.team ? <>{j.team}<small> · {nm(u.name)} (kaptan) · {j.plus + 1} kişi</small></> : <>{nm(u.name)}{j.plus > 0 && <small> + {j.plus} arkadaşı</small>}</>}
                     {j.pos && <span className="pos-tag">{j.pos}</span>}
                     {j.u === ME.id && <em>Sen</em>}
                     {confirmed[j.u] && <em className="conf" title="Geleceğini onayladı">✓ Geliyor</em>}
@@ -267,7 +270,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
                   {wait.map((id) => (
                     <li key={id}>
                       <Avatar user={USERS[id]} className="sm2" />
-                      <span className="who">{USERS[id].name}{id === ME.id && <em>Sen</em>}</span>
+                      <span className="who">{nm(USERS[id].name)}{id === ME.id && <em>Sen</em>}</span>
                       <TrustBadge score={USERS[id].trust} compact />
                     </li>
                   ))}

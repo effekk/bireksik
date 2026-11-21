@@ -12,7 +12,7 @@ function Privacy() {
       <h2>Topladığımız veriler</h2>
       <ul>
         <li>Hesap bilgileri: e-posta adresi (giriş için), ad.</li>
-        <li>Profil bilgileri (isteğe bağlı): bölüm, telefon, Instagram kullanıcı adı, profil fotoğrafı, oynadığın sporlar ve seviyen.</li>
+        <li>Profil bilgileri (isteğe bağlı): telefon, Instagram kullanıcı adı, profil fotoğrafı, oynadığın sporlar ve seviyen.</li>
         <li>Kullanım verileri: açtığın/katıldığın maçlar, güven puanı, takdirler, bildirimler.</li>
       </ul>
       <h2>Neden topluyoruz</h2>
@@ -37,7 +37,7 @@ function Kvkk() {
       <h2>Veri sorumlusu</h2>
       <p>BirEksik. İletişim: <a href={'mailto:' + CONTACT}>{CONTACT}</a>. (Veri sorumlusu kimlik ve iletişim bilgileri yayın öncesi güncellenecektir.)</p>
       <h2>İşlenen kişisel veriler</h2>
-      <p>Kimlik ve iletişim (ad, e-posta, isteğe bağlı telefon ve Instagram), profil bilgileri (bölüm, fotoğraf, spor/seviye) ve uygulama kullanım verileri (maçlar, katılımlar, güven puanı, takdirler).</p>
+      <p>Kimlik ve iletişim (ad, e-posta, isteğe bağlı telefon ve Instagram), profil bilgileri (fotoğraf, spor/seviye) ve uygulama kullanım verileri (maçlar, katılımlar, güven puanı, takdirler).</p>
       <h2>İşleme amaçları</h2>
       <p>Üyelik ve kimlik doğrulama, maç eşleştirme hizmetinin sunulması, bildirim/hatırlatma gönderimi, hizmet güvenliğinin ve kötüye kullanımın önlenmesi.</p>
       <h2>Hukuki sebep</h2>

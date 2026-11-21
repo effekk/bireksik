@@ -135,6 +135,29 @@ export async function loadAll() {
   return { upcoming, past }
 }
 
+// Misafir (üye olmayan) için: açık maçlar, isim/profil olmadan.
+// Sunucu sadece maç + katılım sayılarını döndürür (13_public_browse.sql).
+export async function loadPublic() {
+  const since = new Date(Date.now() - 2 * 3600000).toISOString()
+  const { data: rows, error } = await supabase
+    .from('matches')
+    .select('*, joins(*), waitlist(*)')
+    .eq('status', 'open')
+    .gte('starts_at', since)
+    .order('starts_at')
+  if (error) throw error
+  // İsimler misafire gelmez; her kimlik için yer tutucu koy (bileşenler çökmesin)
+  const ids = new Set()
+  for (const r of rows) {
+    ids.add(r.host)
+    for (const j of r.joins || []) ids.add(j.user_id)
+    for (const w of r.waitlist || []) ids.add(w.user_id)
+  }
+  for (const id of ids) if (id && !USERS[id]) USERS[id] = { id, name: 'Üye', trust: 0, kudos: {} }
+  const now = Date.now()
+  return rows.map(toMatch).filter((m) => m.start > now)
+}
+
 // Maç aç
 export async function createMatch(f) {
   const { data, error } = await supabase

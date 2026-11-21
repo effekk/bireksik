@@ -4,9 +4,10 @@ import { supabase, trError } from '../lib/supabase.js'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-// E-posta ile giriş: adrese 6 haneli kod gider, sonra kod girilir.
-// İlk kez giren biri otomatik kayıt olur.
-export default function Login() {
+// E-posta ile giriş/kayıt: adrese 6 haneli kod gider, sonra kod girilir.
+// mode='signup' → yeni hesap açılabilir. mode='login' → sadece kayıtlı hesaplar.
+export default function Login({ mode = 'signup', onBack, onSwitch }) {
+  const signup = mode === 'signup'
   const [email, setEmail] = useState('')
   const [step, setStep] = useState('mail')
   const [code, setCode] = useState('')
@@ -21,9 +22,16 @@ export default function Login() {
     e?.preventDefault()
     if (!valid || busy) return
     setBusy(true); setErr(''); setInfo('')
-    const { error } = await supabase.auth.signInWithOtp({ email: mail, options: { shouldCreateUser: true } })
+    const { error } = await supabase.auth.signInWithOtp({ email: mail, options: { shouldCreateUser: signup } })
     setBusy(false)
-    if (error) return setErr(trError(error))
+    if (error) {
+      const m = (error.message || '').toLowerCase()
+      // Giriş modunda kayıtlı olmayan e-posta
+      if (!signup && (m.includes('signups not allowed') || m.includes('otp_disabled') || m.includes('not found'))) {
+        return setErr('Bu e-posta kayıtlı değil. "Üye ol" ile hesap oluşturabilirsin.')
+      }
+      return setErr(trError(error))
+    }
     setStep('code'); setCode(''); setInfo('Kod gönderildi.')
   }
 
@@ -45,11 +53,18 @@ export default function Login() {
         </svg>
       </div>
       <div className="login-card">
+        {onBack && step === 'mail' && (
+          <button type="button" className="back-link" onClick={onBack}>← Siteyi incelemeye dön</button>
+        )}
         <Logo size={32} />
         {step === 'mail' ? (
           <form onSubmit={sendCode}>
-            <h1>E-posta ile giriş yap</h1>
-            <p className="meta">E-postana 6 haneli bir giriş kodu göndereceğiz.</p>
+            <h1>{signup ? 'Üye ol' : 'Giriş yap'}</h1>
+            <p className="meta">
+              {signup
+                ? 'E-postanı yaz, 6 haneli bir kod gönderelim. Birkaç saniyede hesabın hazır.'
+                : 'Kayıtlı e-postana 6 haneli bir giriş kodu göndereceğiz.'}
+            </p>
             <input
               type="email"
               autoFocus
@@ -60,7 +75,13 @@ export default function Login() {
               autoCapitalize="none"
               autoCorrect="off"
             />
-            <button className="btn primary big" disabled={!valid || busy}>{busy ? 'Gönderiliyor…' : 'Kod gönder'}</button>
+            <button className="btn primary big" disabled={!valid || busy}>{busy ? 'Gönderiliyor…' : (signup ? 'Üye ol' : 'Kod gönder')}</button>
+            {onSwitch && (
+              <p className="meta small switch-auth">
+                {signup ? 'Zaten üye misin? ' : 'Hesabın yok mu? '}
+                <button type="button" className="link" onClick={onSwitch}>{signup ? 'Giriş yap' : 'Üye ol'}</button>
+              </p>
+            )}
           </form>
         ) : (
           <form onSubmit={verify}>
@@ -68,7 +89,7 @@ export default function Login() {
             <h1>Kodu gir</h1>
             <p className="meta">Kodu <b>{mail}</b> adresine gönderdik. Yanlış mı yazdın? <b>Geri dön</b>'e basıp düzeltebilirsin. Gelen kutunda yoksa spam klasörüne de bak.</p>
             <input className="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} placeholder="••••••" aria-label="Doğrulama kodu" autoFocus />
-            <button className="btn primary big" disabled={code.length < 6 || busy}>{busy ? 'Kontrol ediliyor…' : 'Giriş yap'}</button>
+            <button className="btn primary big" disabled={code.length < 6 || busy}>{busy ? 'Kontrol ediliyor…' : (signup ? 'Üye ol' : 'Giriş yap')}</button>
             <div className="row-links">
               <button type="button" className="link" onClick={sendCode} disabled={busy}>Kodu tekrar gönder</button>
             </div>

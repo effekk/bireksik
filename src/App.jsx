@@ -15,7 +15,7 @@ import PublicProfile from './components/PublicProfile.jsx'
 import Offers from './components/Offers.jsx'
 import Legal from './components/Legal.jsx'
 import Feedback from './components/Feedback.jsx'
-import Login from './components/Login.jsx'
+import GuestGate from './components/Guest.jsx'
 import Welcome from './components/Welcome.jsx'
 import { PhotoContext } from './components/Avatar.jsx'
 import { supabase, trError } from './lib/supabase.js'
@@ -77,7 +77,7 @@ export default function App() {
   }, [session])
 
   if (session === undefined) return <div className="boot">Yükleniyor…</div>
-  if (!session) return <Login />
+  if (!session) return <GuestGate />
   if (loadErr) return (
     <div className="boot err">
       <p>{loadErr}</p>

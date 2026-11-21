@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import { useGuest } from '../lib/guest.js'
 
 // Profil fotoğrafları: { kullanıcıId: fotoğrafAdresi }
 // Taslakta fotoğraf sadece tarayıcıda durur; Supabase gelince sunucuya yüklenecek.
@@ -10,6 +11,9 @@ export function usePhotos() {
 
 export default function Avatar({ user, className = '' }) {
   const { photos } = usePhotos()
+  const guest = useGuest()
+  // Misafir modda katılımcı kimliği gizli: blurlu yuvarlak
+  if (guest) return <span className={'avatar blurred ' + className} aria-hidden="true">●</span>
   const src = user && (photos[user.id] || user.photo)
   if (src) {
     return (

@@ -660,3 +660,26 @@ input[aria-invalid='true'] { border-color: var(--trust-low); }
 .legal p, .legal li { line-height: 1.6; color: var(--ink); }
 .legal ul { padding-left: 20px; display: grid; gap: 4px; margin: 6px 0; }
 .legal a { color: var(--pitch); text-decoration: underline; }
+
+/* ---------- Misafir (üye olmadan gezme) ---------- */
+.blurred { filter: blur(5px); }
+.blurred-text { filter: blur(4px); -webkit-user-select: none; user-select: none; letter-spacing: .5px; }
+.avatar.blurred { background: var(--pitch); color: #fff; }
+.trust.blurred { filter: blur(3px); }
+
+.guest-auth { display: flex; gap: 8px; margin-left: auto; }
+.g-btn { padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; border: 1.5px solid transparent; cursor: pointer; }
+.g-btn.ghost { background: transparent; color: #fff; border-color: #ffffff66; }
+.g-btn.ghost:hover { background: #ffffff1a; }
+.g-btn.solid { background: var(--ball); color: var(--pitch-deep); }
+
+.guest-banner { background: var(--ball); color: var(--pitch-deep); }
+.guest-banner .wrap { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; padding-top: 10px; padding-bottom: 10px; font-size: 14px; font-weight: 600; }
+.guest-banner .link { color: var(--pitch-deep); font-weight: 800; text-decoration: underline; }
+.guest-banner-cta { white-space: nowrap; }
+
+.guest-note { background: #fff7d6; border: 1px solid #f0e2a8; color: #5c4a00; border-radius: 14px; padding: 12px 14px; margin: 16px 0 10px; font-size: 14px; line-height: 1.5; }
+.guest-note .link { color: var(--pitch); font-weight: 800; text-decoration: underline; }
+
+.switch-auth { margin-top: 14px; text-align: center; }
+.switch-auth .link { font-weight: 700; text-decoration: underline; }
