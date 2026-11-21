@@ -216,7 +216,7 @@ export default function Profile({ prefs, onPrefs, onSaveInfo, alerts = {}, onAle
             <InfoEditor onSave={async (v) => { await onSaveInfo(v); setEditing(false) }} onCancel={() => setEditing(false)} />
           ) : (
             <>
-              <h1>{ME.name}</h1>
+              <h1>{ME.name}{ME.dev && <span className="dev-badge" title="BirEksik geliştiricisi">⚙️ Geliştirici</span>}</h1>
               {(ME.age || ME.gender) && <p className="meta">{[ME.age ? `${ME.age} yaş` : '', ME.gender].filter(Boolean).join(' · ')}</p>}
               <p className="meta">{sportLine(prefs)}</p>
               <p className="meta small">{email}</p>

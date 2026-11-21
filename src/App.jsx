@@ -66,6 +66,7 @@ export default function App() {
         dept: data.dept,
         age: data.age || null,
         gender: data.gender || '',
+        dev: data.is_dev || false,
         trust: data.trust,
         played: data.played,
         phone: data.phone || '',

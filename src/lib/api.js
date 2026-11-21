@@ -305,6 +305,7 @@ function fullUser(p, counts) {
     dept: p.dept || '',
     age: p.age || null,
     gender: p.gender || '',
+    dev: p.is_dev || false,
     trust: p.trust,
     played: p.played,
     photo: p.photo_url || undefined,
