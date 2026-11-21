@@ -92,7 +92,7 @@ function GuestApp({ onAuth }) {
           </span>
         </div>
       </div>
-      <main className="wrap page">{body}</main>
+      <main className="wrap page" key={route.page + (route.id || '')}>{body}</main>
     </GuestContext.Provider>
   )
 }

@@ -45,14 +45,14 @@ export default function Login({ mode = 'signup', onBack, onSwitch }) {
   }
 
   return (
-    <div className="login">
+    <div className="login page">
       <div className="login-art" aria-hidden="true">
         <svg viewBox="0 0 200 60">
           {[20, 70, 120].map((x) => <circle key={x} cx={x} cy="30" r="18" fill="#fff" fillOpacity=".92" />)}
           <circle cx="172" cy="30" r="17" fill="none" stroke="var(--ball)" strokeWidth="3.5" strokeDasharray="7 5" />
         </svg>
       </div>
-      <div className="login-card">
+      <div className="login-card page" key={mode + step}>
         {onBack && step === 'mail' && (
           <button type="button" className="back-link" onClick={onBack}>← Siteyi incelemeye dön</button>
         )}
