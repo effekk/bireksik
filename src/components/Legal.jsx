@@ -55,8 +55,10 @@ function Terms() {
     <>
       <h1>Kullanım Koşulları</h1>
       <p className="meta">Son güncelleme: {YEAR}</p>
+      <p className="legal-intro">Üye olarak bu Kullanım Koşulları'nı ve Gizlilik Politikası'nı okuduğunu ve kabul ettiğini beyan edersin. Kabul etmiyorsan platformu kullanmamalısın.</p>
+
       <h2>Hizmet</h2>
-      <p>BirEksik, kullanıcıların padel ve halı saha için birbirini bulup maç ayarlamasına yardımcı olan bir eşleştirme platformudur. BirEksik maçların kendisini organize etmez; yalnızca kullanıcıları bir araya getirir.</p>
+      <p>BirEksik, kullanıcıların padel ve halı saha için birbirini bulup maç ayarlamasına yardımcı olan bir eşleştirme platformudur. BirEksik maçların kendisini organize etmez, bir tarafı değildir; yalnızca kullanıcıları bir araya getiren aracı bir platformdur. Sahaların kiralanması, ücretlerin ödenmesi ve maçın oynanması tümüyle kullanıcılar arasındadır.</p>
       <h2>Hesap ve doğruluk</h2>
       <p>Hesabını gerçek bilgilerle oluşturmayı ve bilgilerini güncel tutmayı kabul edersin. Hesabının güvenliğinden sen sorumlusun.</p>
       <h2>Kullanıcı davranışı</h2>
@@ -65,8 +67,23 @@ function Terms() {
         <li>Katılacağın maçlara gelmeye özen gösterirsin; son dakika iptalleri ve gelmeme güven puanını etkiler.</li>
         <li>Platformu yalnızca amacına uygun kullanırsın.</li>
       </ul>
+      <h2>Katılım kendi sorumluluğundadır</h2>
+      <p>Maçlara katılım tamamen kendi iradenle ve kendi sorumluluğundadır. Spor fiziksel bir aktivitedir; sağlık durumunun bu aktiviteye uygun olduğundan emin olmak senin sorumluluğundur. Diğer oyuncuların kimliğini, davranışını veya oyun seviyesini BirEksik doğrulamaz.</p>
+
       <h2>Sorumluluğun reddi</h2>
-      <p>Maçlar kullanıcılar arasında gerçekleşir. Saha kiralama, ödeme, oyun sırasında yaşanan anlaşmazlık veya yaralanmalar dâhil olmak üzere maçlarla ilgili her türlü sorumluluk kullanıcılara aittir. BirEksik, kullanıcıların davranışlarından veya üçüncü taraf tesislerden sorumlu değildir.</p>
+      <p>BirEksik ve işletmecisi, kullanıcılar arasındaki maçların bir tarafı değildir ve aşağıdakiler dâhil ancak bunlarla sınırlı olmamak üzere hiçbir durumdan sorumlu tutulamaz:</p>
+      <ul>
+        <li>Oyun sırasında veya öncesi/sonrasında yaşanan tartışma, gerginlik, sözlü veya fiziksel anlaşmazlık, hakaret ya da kavga;</li>
+        <li>Yaralanma, sakatlık, sağlık sorunu veya her türlü bedensel zarar;</li>
+        <li>Eşya kaybı, hırsızlık ya da maddi hasar;</li>
+        <li>Saha, tesis, ekipman veya üçüncü taraf hizmetlerinden doğan sorunlar;</li>
+        <li>Bir kullanıcının maça gelmemesi, geç kalması, ödeme yapmaması veya verdiği sözü tutmaması;</li>
+        <li>Kullanıcıların birbirine karşı davranışları ve paylaştıkları bilgiler.</li>
+      </ul>
+      <p>Bu tür durumlarda tüm sorumluluk, olayın tarafı olan kullanıcılara aittir. BirEksik yalnızca tanıştıran aracı konumundadır.</p>
+
+      <h2>Sorumsuzluk ve tazminat</h2>
+      <p>Platformu kullanarak; BirEksik'i ve işletmecisini, platformu kullanımından veya katıldığın maçlardan doğan ya da doğabilecek her türlü talep, zarar, kayıp ve masraftan sorumlu tutmayacağını kabul edersin. Üçüncü bir kişinin senin davranışın nedeniyle BirEksik'e yönelttiği taleplerde doğan zararı karşılamayı (tazmin etmeyi) kabul edersin. Yürürlükteki hukukun izin verdiği azami ölçüde, BirEksik'in toplam sorumluluğu yoktur; hizmet "olduğu gibi" sunulur.</p>
       <h2>Fikri mülkiyet</h2>
       <p>BirEksik adı, logosu ve tasarımı BirEksik'e aittir; izinsiz kullanılamaz.</p>
       <h2>Değişiklik ve fesih</h2>

@@ -105,6 +105,8 @@ export default function App() {
       }).eq('id', profile.id).select().single()
       if (error) throw new Error('Kaydedilemedi: ' + error.message)
       Object.assign(ME, { name: data.name, age: data.age || null, gender: data.gender || '', instagram: data.instagram || '', photo: data.photo_url || undefined })
+      // Sözleşme onay zamanını kaydet (sütun yoksa sessizce geç; onboarding'i bozma)
+      supabase.from('profiles').update({ terms_accepted_at: new Date().toISOString() }).eq('id', profile.id).then(() => {}, () => {})
       setProfile(data)
     }
     return <Welcome onDone={completeOnboarding} />

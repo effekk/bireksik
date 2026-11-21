@@ -14,13 +14,16 @@ export default function Login({ mode = 'signup', onBack, onSwitch }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const [info, setInfo] = useState('')
+  const [agreed, setAgreed] = useState(false)
 
   const mail = email.trim().toLowerCase()
+  // Üye olurken sözleşme onayı zorunlu; girişte gerekmez (zaten üye)
+  const canSend = EMAIL_RE.test(mail) && (!signup || agreed)
   const valid = EMAIL_RE.test(mail)
 
   const sendCode = async (e) => {
     e?.preventDefault()
-    if (!valid || busy) return
+    if (!canSend || busy) return
     setBusy(true); setErr(''); setInfo('')
     const { error } = await supabase.auth.signInWithOtp({ email: mail, options: { shouldCreateUser: signup } })
     setBusy(false)
@@ -75,7 +78,17 @@ export default function Login({ mode = 'signup', onBack, onSwitch }) {
               autoCapitalize="none"
               autoCorrect="off"
             />
-            <button className="btn primary big" disabled={!valid || busy}>{busy ? 'Gönderiliyor…' : (signup ? 'Üye ol' : 'Kod gönder')}</button>
+            {signup && (
+              <label className="agree">
+                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+                <span>
+                  <a href="#kosullar" target="_blank" rel="noopener noreferrer">Kullanım Koşulları</a> ve{' '}
+                  <a href="#gizlilik" target="_blank" rel="noopener noreferrer">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum.
+                  Maçlara katılımın kendi sorumluluğumda olduğunu, oyun sırasında doğabilecek anlaşmazlık, yaralanma veya zararlardan BirEksik'in sorumlu olmadığını anladım.
+                </span>
+              </label>
+            )}
+            <button className="btn primary big" disabled={!canSend || busy}>{busy ? 'Gönderiliyor…' : (signup ? 'Üye ol' : 'Kod gönder')}</button>
             {onSwitch && (
               <p className="meta small switch-auth">
                 {signup ? 'Zaten üye misin? ' : 'Hesabın yok mu? '}

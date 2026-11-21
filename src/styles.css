@@ -740,3 +740,9 @@ html.reveal-ready .reveal.in { opacity: 1; transform: none; }
 .rm-btn { flex: none; margin-left: 6px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font-size: 13px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: color .15s, border-color .15s; }
 .rm-btn:hover { color: #c0392b; border-color: #e3b4ae; }
 .rm-confirm { display: inline-flex; gap: 10px; align-items: center; margin-left: 6px; white-space: nowrap; }
+
+/* ---------- Üyelik sözleşme onayı + legal intro ---------- */
+.agree { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.5; cursor: pointer; text-align: left; }
+.agree input { margin-top: 2px; width: 18px; height: 18px; flex: none; accent-color: var(--pitch); cursor: pointer; }
+.agree a { color: var(--pitch); font-weight: 700; text-decoration: underline; }
+.legal-intro { background: var(--surface, #f2f5f1); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
