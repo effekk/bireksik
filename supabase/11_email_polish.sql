@@ -13,6 +13,27 @@ returns text language sql stable as $$
   from (select ts at time zone 'Europe/Istanbul' as l) s
 $$;
 
+-- Bildirim e-postası konuları — daha coşkulu
+create or replace function public._email_notification()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare mail text; subj text;
+begin
+  if new.kind not in ('join', 'left', 'promoted', 'reminder', 'cancelled') then
+    return new;
+  end if;
+  select email into mail from auth.users where id = new.user_id;
+  if mail is null then return new; end if;
+  subj := case new.kind
+    when 'reminder'  then 'BirEksik · Maça az kaldı — geliyor musun? 🔥'
+    when 'cancelled' then 'BirEksik · Maç iptal edildi'
+    when 'promoted'  then 'BirEksik · Sıra sende, kadrodasın! 🎉'
+    when 'join'      then 'BirEksik · Kadron büyüyor! 🎉'
+    when 'left'      then 'BirEksik · Bir oyuncu ayrıldı'
+    else 'BirEksik' end;
+  perform _send_email(mail, subj, _email_html(new.text, new.match_id));
+  return new;
+end $$;
+
 -- Logolu, samimi e-posta gövdesi
 create or replace function public._email_html(p_text text, p_match uuid)
 returns text language sql immutable as $$
@@ -24,7 +45,7 @@ returns text language sql immutable as $$
     || case when p_match is not null then
          '<a href="https://bireksik.com/#mac-' || p_match::text || '" style="display:inline-block;background:#0e6b43;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:700;">Maça git</a>'
        else '' end
-    || '<p style="margin:22px 0 0;color:#5d6b63;font-size:14px;">İyi oyunlar dileriz! 🎾⚽</p>'
+    || '<p style="margin:22px 0 0;color:#5d6b63;font-size:14px;">Sahada görüşürüz, iyi oyunlar! 🎾⚽</p>'
     || '</div></div>'
     || '<p style="text-align:center;margin:16px 0 0;font-size:12px;color:#9baba1;">BirEksik · Bir kişi mi eksik? BirEksik''te bulursun.</p></div>'
 $$;
@@ -89,7 +110,7 @@ begin
 
   select name into myname from profiles where id = me;
   perform _notify(m.host, 'join',
-    coalesce(myname, 'Bir oyuncu') || ' maçına katıldı! 🎉 ' || _tr_datetime(m.starts_at) || ' · ' || m.place, p_match);
+    '⚡ Kadron büyüyor! ' || coalesce(myname, 'Bir oyuncu') || ' maçına katıldı 🎉  ' || _tr_datetime(m.starts_at) || ' · ' || m.place || '. Hadi sahaya!', p_match);
 end $$;
 grant execute on function public.join_match(uuid, int, text, text) to authenticated;
 revoke execute on function public.join_match(uuid, int, text, text) from public, anon;
@@ -144,7 +165,7 @@ begin
       insert into joins (match_id, user_id) values (p_match, w.user_id);
       delete from waitlist where match_id = p_match and user_id = w.user_id;
       promoted := promoted + 1;
-      perform _notify(w.user_id, 'promoted', 'Yedekten kadroya alındın! 🎉 ' || whentxt || '. Görüşmek üzere!', p_match);
+      perform _notify(w.user_id, 'promoted', '🎉 Sıra sende! Yedekten kadroya alındın — ' || whentxt || '. Kramponları kap, görüşmek üzere!', p_match);
       select name into pname from profiles where id = w.user_id;
       if m.host <> me then perform _notify(m.host, 'promoted', coalesce(pname, 'Biri') || ' yedekten kadroya alındı.', p_match); end if;
     end loop;
@@ -169,8 +190,8 @@ begin
     where status = 'open' and not reminded
       and starts_at > now() and starts_at <= now() + interval '6 hours'
   loop
-    msg := 'Maçın yaklaşıyor! ' || _tr_datetime(m.starts_at) || ' · ' || m.place
-        || '. Hâlâ geliyor musun? Gelemeyeceksen, yerini başkası alabilsin diye erkenden ayrılman yeter.';
+    msg := '🔥 Maça az kaldı! ' || _tr_datetime(m.starts_at) || ' · ' || m.place
+        || '. Hâlâ var mısın? Gelemeyeceksen yerini başkası kapsın diye hemen ayrıl — kadro seni bekliyor!';
     perform _notify(m.host, 'reminder', msg, m.id);
     for p in select user_id from joins where match_id = m.id loop
       perform _notify(p.user_id, 'reminder', msg, m.id);
