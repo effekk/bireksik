@@ -15,10 +15,11 @@ export default function Login({ mode = 'signup', onBack, onSwitch }) {
   const [err, setErr] = useState('')
   const [info, setInfo] = useState('')
   const [agreed, setAgreed] = useState(false)
+  const [over18, setOver18] = useState(false)
 
   const mail = email.trim().toLowerCase()
-  // Üye olurken sözleşme onayı zorunlu; girişte gerekmez (zaten üye)
-  const canSend = EMAIL_RE.test(mail) && (!signup || agreed)
+  // Üye olurken sözleşme onayı + 18 yaş onayı zorunlu; girişte gerekmez (zaten üye)
+  const canSend = EMAIL_RE.test(mail) && (!signup || (agreed && over18))
   const valid = EMAIL_RE.test(mail)
 
   const sendCode = async (e) => {
@@ -86,6 +87,12 @@ export default function Login({ mode = 'signup', onBack, onSwitch }) {
                   <a href="#gizlilik" target="_blank" rel="noopener noreferrer">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum.
                   Maçlara katılımın kendi sorumluluğumda olduğunu, oyun sırasında doğabilecek anlaşmazlık, yaralanma veya zararlardan BirEksik'in sorumlu olmadığını anladım.
                 </span>
+              </label>
+            )}
+            {signup && (
+              <label className="agree">
+                <input type="checkbox" checked={over18} onChange={(e) => setOver18(e.target.checked)} />
+                <span>18 yaşından büyüğüm.</span>
               </label>
             )}
             <button className="btn primary big" disabled={!canSend || busy}>{busy ? 'Gönderiliyor…' : (signup ? 'Üye ol' : 'Kod gönder')}</button>

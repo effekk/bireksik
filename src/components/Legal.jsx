@@ -59,6 +59,9 @@ function Terms() {
 
       <h2>Hizmet</h2>
       <p>BirEksik, kullanıcıların padel ve halı saha için birbirini bulup maç ayarlamasına yardımcı olan bir eşleştirme platformudur. BirEksik maçların kendisini organize etmez, bir tarafı değildir; yalnızca kullanıcıları bir araya getiren aracı bir platformdur. Sahaların kiralanması, ücretlerin ödenmesi ve maçın oynanması tümüyle kullanıcılar arasındadır.</p>
+      <h2>Yaş sınırı</h2>
+      <p>Platformu kullanmak ve üye olmak için 18 yaşından büyük olmalısın. Üye olurken bunu beyan edersin. 18 yaşından küçük olduğu tespit edilen hesaplar kapatılabilir.</p>
+
       <h2>Hesap ve doğruluk</h2>
       <p>Hesabını gerçek bilgilerle oluşturmayı ve bilgilerini güncel tutmayı kabul edersin. Hesabının güvenliğinden sen sorumlusun.</p>
       <h2>Kullanıcı davranışı</h2>

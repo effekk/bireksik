@@ -1,7 +1,6 @@
 import { GENDERS, ME, POSITIONS, USERS } from '../data/mock.js'
 import { cleanInstagram, instaUrl, SKILL_LEVELS } from '../lib/util.js'
-import { loadMyProfileExtras, setNotePublic } from '../lib/api.js'
-import { trError } from '../lib/supabase.js'
+import { loadMyProfileExtras } from '../lib/api.js'
 import { KUDOS, KUDOS_BY_KEY } from '../lib/kudos.js'
 import { useEffect, useRef, useState } from 'react'
 import { PENALTIES, trustTier } from '../lib/trust.js'
@@ -43,18 +42,8 @@ function PhotoPicker() {
   )
 }
 
-function KudosPanel({ notes, setNotes }) {
-  const [err, setErr] = useState('')
+function KudosPanel({ notes }) {
   const total = Object.values(ME.kudos || {}).reduce((a, b) => a + b, 0)
-  const flip = async (id) => {
-    const n = notes.find((x) => x.id === id)
-    setNotes((ns) => ns.map((x) => (x.id === id ? { ...x, public: !x.public } : x)))
-    try { await setNotePublic(n.matchId, n.from, !n.public) } catch (e) {
-      setErr(trError(e))
-      setNotes((ns) => ns.map((x) => (x.id === id ? { ...x, public: n.public } : x)))
-    }
-  }
-
   return (
     <section className="panel kpanel">
       <h2>Aldığın takdirler <span className="kcount">{total}</span></h2>
@@ -69,23 +58,16 @@ function KudosPanel({ notes, setNotes }) {
       </div>
 
       <h3 className="ksub">Sana bırakılan notlar</h3>
-      <p className="meta small">Notları sadece sen görürsün. Açtığın notlar profilinde herkese görünür.</p>
-      <ul className="knotes">
+      <p className="meta small">Bu notlar profilinde herkese görünür.</p>
+      <ul className="knotes read">
         {notes.filter((n) => n.text).map((n) => (
           <li key={n.id}>
-            <div>
-              <p>“{n.text}”</p>
-              <small>{USERS[n.from]?.name || 'Bir oyuncu'} · {n.tags.map((t) => KUDOS_BY_KEY[t].label).join(', ')}</small>
-            </div>
-            <label className="switch">
-              <input type="checkbox" checked={n.public} onChange={() => flip(n.id)} />
-              <span>{n.public ? 'Profilde' : 'Gizli'}</span>
-            </label>
+            <p>“{n.text}”</p>
+            <small>{USERS[n.from]?.name || 'Bir oyuncu'} · {n.tags.map((t) => KUDOS_BY_KEY[t]?.label).filter(Boolean).join(', ')}</small>
           </li>
         ))}
       </ul>
       {notes.filter((n) => n.text).length === 0 && <p className="meta small">Henüz not yok. Maçlardan sonra oyuncular sana not bırakabilir.</p>}
-      {err && <p className="err">{err}</p>}
       <p className="meta small">Takdirler Güven Puanını etkilemez.</p>
     </section>
   )
@@ -265,7 +247,7 @@ export default function Profile({ prefs, onPrefs, onSaveInfo, alerts = {}, onAle
 
       <AlertPrefs alerts={alerts} onAlert={onAlert} />
 
-      <KudosPanel notes={notes} setNotes={setNotes} />
+      <KudosPanel notes={notes} />
 
       <div className="p-grid">
         <section className="panel">

@@ -190,6 +190,8 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
           </dl>
           {match.note && <p className="note">“{match.note}”</p>}
 
+          <p className="safety-note">🛡️ Güvenliğin için tanımadığın kişilerle umumi ve kalabalık sahalarda buluş. Rahatsız edici bir durumda maçtan ayrıl ve bize bildir.</p>
+
           {!isHost && !mine && !waiting && !full && usesPos && <PositionPicker match={match} value={pos} onChange={(p) => { setPos(p); setPlus(0) }} preferred={myPositions} />}
           {!isHost && !mine && !waiting && !full && !team && <PlusPicker max={plusMax} value={Math.min(plus, plusMax)} onChange={setPlus} />}
           {!isHost && !mine && !full && team && <TeamJoin match={match} onJoin={onToggle} />}
