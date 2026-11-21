@@ -34,8 +34,9 @@ h3 { font-size: 22px; font-weight: 700; }
 .avatar {
   width: 36px; height: 36px; border-radius: 50%; display: inline-grid; place-items: center;
   background: var(--pitch); color: #fff; font-weight: 700; font-size: 15px; flex: none;
-  border: 2px solid var(--bg);
 }
+/* Üst üste binen avatarları (slots) ayıran halka — sadece orada */
+.slots .avatar { border: 2px solid var(--bg); }
 .avatar.sm { width: 32px; height: 32px; font-size: 14px; border-color: transparent; background: #ffffff26; }
 .avatar.xl { width: 72px; height: 72px; font-size: 30px; }
 .avatar.empty { background: transparent; border: 2px dashed var(--muted); }
