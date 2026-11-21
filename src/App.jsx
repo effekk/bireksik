@@ -13,6 +13,8 @@ import Profile from './components/Profile.jsx'
 import People from './components/People.jsx'
 import PublicProfile from './components/PublicProfile.jsx'
 import Offers from './components/Offers.jsx'
+import Legal from './components/Legal.jsx'
+import Feedback from './components/Feedback.jsx'
 import Login from './components/Login.jsx'
 import Welcome from './components/Welcome.jsx'
 import { PhotoContext } from './components/Avatar.jsx'
@@ -24,7 +26,7 @@ function readRoute() {
   if (h.startsWith('mac-')) return { page: 'detail', id: h.slice(4) }
   if (h.startsWith('takdir-')) return { page: 'kudos', id: h.slice(7) }
   if (h.startsWith('kisi-')) return { page: 'person', id: h.slice(5) }
-  if (['olustur', 'profil', 'kisiler', 'teklifler'].includes(h)) return { page: h }
+  if (['olustur', 'profil', 'kisiler', 'teklifler', 'gizlilik', 'kvkk', 'kosullar'].includes(h)) return { page: h }
   return { page: 'maclar' }
 }
 
@@ -311,15 +313,22 @@ function MainApp({ profile, setProfile, email }) {
   else if (route.page === 'kisiler') body = <People onOpen={(id) => go('kisi-' + id)} />
   else if (route.page === 'person') body = <PublicProfile key={route.id} id={route.id} myMatches={matches.filter((m) => m.host === ME.id)} onOffer={sendOffer} onInvite={sendInvite} busy={busy} />
   else if (route.page === 'teklifler') body = <Offers incoming={offers.incoming} outgoing={offers.outgoing} onRespond={answerOffer} onCancel={withdrawOffer} busy={busy} />
+  else if (['gizlilik', 'kvkk', 'kosullar'].includes(route.page)) body = <Legal page={route.page} />
   else body = <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
 
   return (
     <PhotoContext.Provider value={{ photos, setPhoto }}>
       <Header page={route.page} notifications={notifications} onMarkRead={markNotifsRead} offerCount={pendingOffers} />
-      <main className="wrap">{body}</main>
+      <main className="wrap page" key={route.page + (route.id || '')}>{body}</main>
       <footer className="foot wrap">
-        <span>BirEksik</span>
-        <button type="button" className="link" onClick={logout}>Çıkış yap</button>
+        <Feedback />
+        <nav className="foot-links">
+          <a href="#kosullar">Kullanım Koşulları</a>
+          <a href="#gizlilik">Gizlilik</a>
+          <a href="#kvkk">KVKK</a>
+          <button type="button" className="link" onClick={logout}>Çıkış yap</button>
+        </nav>
+        <p className="foot-copy">© {new Date().getFullYear()} BirEksik · Bir kişi mi eksik? BirEksik'te bulursun.</p>
       </footer>
       {shareId && <ShareSheet match={matches.find((x) => x.id === shareId)} onClose={() => setShareId(null)} />}
       {toast && <div className="toast" role="status">{toast}</div>}

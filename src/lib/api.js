@@ -3,6 +3,14 @@
 import { supabase } from './supabase.js'
 import { ME, USERS } from '../data/mock.js'
 
+// İletişim / geri bildirim gönder
+export async function sendFeedback({ kind, message, contact }) {
+  const { error } = await supabase.from('feedback').insert({
+    user_id: ME.id, kind, message: message.trim(), contact: contact?.trim() || null,
+  })
+  if (error) throw error
+}
+
 const KUDOS_WINDOW_H = 48
 const DAY_NAMES = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']
 
