@@ -762,3 +762,8 @@ html.reveal-ready .reveal.in { opacity: 1; transform: none; }
 
 /* ---------- Geliştirici rozeti ---------- */
 .dev-badge { display: inline-flex; align-items: center; gap: 4px; vertical-align: middle; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: var(--ball); color: var(--pitch-deep); font-size: 12px; font-weight: 800; letter-spacing: .2px; }
+
+/* ---------- Footer Instagram linki ---------- */
+.foot-social { display: inline-flex; align-items: center; gap: 7px; color: var(--ink); font-weight: 700; font-size: 14px; text-decoration: none; margin: 4px 0 2px; }
+.foot-social:hover { color: var(--pitch); }
+.foot-social svg { flex: none; }
