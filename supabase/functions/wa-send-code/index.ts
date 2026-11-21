@@ -1,5 +1,5 @@
-// SMS doğrulama kodu gönder — Twilio Verify (hat/numara gerektirmez)
-// Secret'lar: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SID
+// SMS doğrulama kodu gönder — Twilio Messaging (trial'da bedava, Verify gerektirmez)
+// Secret'lar: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM (trial numaran, +1...)
 // SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY otomatik gelir.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -47,25 +47,27 @@ Deno.serve(async (req) => {
     if (prev && Date.now() - new Date(prev.last_sent).getTime() < 60_000)
       return json({ error: 'Çok sık denedin, bir dakika bekle.' }, 429)
 
-    // Twilio Verify — kodu Twilio gönderir
+    // Kodu biz üretip saklıyoruz
+    const code = String(Math.floor(100000 + Math.random() * 900000))
+    const expires = new Date(Date.now() + 5 * 60_000).toISOString()
+    const { error: upErr } = await admin.from('phone_otp').upsert({
+      user_id: user.id, phone: e164, code, expires_at: expires, attempts: 0, last_sent: new Date().toISOString(),
+    })
+    if (upErr) return json({ error: 'Kayıt hatası.' }, 500)
+
+    // Twilio ile SMS gönder
     const sid = Deno.env.get('TWILIO_ACCOUNT_SID')!
     const tok = Deno.env.get('TWILIO_AUTH_TOKEN')!
-    const vsid = Deno.env.get('TWILIO_VERIFY_SID')!
-    const r = await fetch(`https://verify.twilio.com/v2/Services/${vsid}/Verifications`, {
+    const from = Deno.env.get('TWILIO_FROM')!
+    const r = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
       method: 'POST',
       headers: { Authorization: 'Basic ' + btoa(`${sid}:${tok}`), 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ To: e164, Channel: 'sms' }),
+      body: new URLSearchParams({ From: from, To: e164, Body: `BirEksik doğrulama kodun: ${code}` }),
     })
     if (!r.ok) {
-      console.error('Twilio start error', r.status, await r.text())
-      return json({ error: 'SMS gönderilemedi. Numaranı kontrol et ya da biraz sonra dene.' }, 502)
+      console.error('Twilio SMS error', r.status, await r.text())
+      return json({ error: 'SMS gönderilemedi. Numaranı kontrol et (trial’de sadece doğrulanmış numaralara gider).' }, 502)
     }
-
-    // Hangi numaraya kod gittiğini sakla (doğrulama adımı için) — kodu Twilio tutar
-    const expires = new Date(Date.now() + 10 * 60_000).toISOString()
-    await admin.from('phone_otp').upsert({
-      user_id: user.id, phone: e164, code: '-', expires_at: expires, attempts: 0, last_sent: new Date().toISOString(),
-    })
     return json({ ok: true })
   } catch (e) {
     console.error(e)
