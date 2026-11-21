@@ -64,12 +64,12 @@ export default function Login() {
           </form>
         ) : (
           <form onSubmit={verify}>
+            <button type="button" className="back-link" onClick={() => { setStep('mail'); setCode(''); setErr(''); setInfo('') }}>← Geri dön</button>
             <h1>Kodu gir</h1>
-            <p className="meta">Kodu <b>{mail}</b> adresine gönderdik. Gelen kutunda yoksa spam klasörüne de bak.</p>
+            <p className="meta">Kodu <b>{mail}</b> adresine gönderdik. Yanlış mı yazdın? <b>Geri dön</b>'e basıp düzeltebilirsin. Gelen kutunda yoksa spam klasörüne de bak.</p>
             <input className="code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} placeholder="••••••" aria-label="Doğrulama kodu" autoFocus />
             <button className="btn primary big" disabled={code.length < 6 || busy}>{busy ? 'Kontrol ediliyor…' : 'Giriş yap'}</button>
             <div className="row-links">
-              <button type="button" className="link" onClick={() => { setStep('mail'); setErr(''); setInfo('') }}>E-postayı değiştir</button>
               <button type="button" className="link" onClick={sendCode} disabled={busy}>Kodu tekrar gönder</button>
             </div>
           </form>

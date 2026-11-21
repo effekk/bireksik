@@ -443,6 +443,8 @@ input[aria-invalid='true'] { border-color: var(--trust-low); }
 .boot { min-height: 60vh; display: grid; place-items: center; color: var(--muted); font-weight: 600; }
 .boot.err { color: var(--trust-low); padding: 24px; text-align: center; }
 .row-links { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.back-link { align-self: flex-start; background: none; border: 0; padding: 4px 0; margin-bottom: 4px; color: var(--muted); font: 600 14px var(--font-body); cursor: pointer; }
+.back-link:hover { color: var(--ink); }
 .login-card .ok, .login-card .err { margin: 0; }
 .p-actions { display: flex; gap: 4px; flex-wrap: wrap; margin-left: -10px; }
 .info-edit { display: grid; gap: 10px; width: min(420px, 100%); }
