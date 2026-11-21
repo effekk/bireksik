@@ -1,9 +1,23 @@
-// WhatsApp doğrulama kodu gönder
-// Supabase Edge Function. Secret'lar: WHATSAPP_TOKEN, WHATSAPP_PHONE_ID,
-// WHATSAPP_TEMPLATE (authentication şablon adı), WHATSAPP_LANG (varsayılan "tr").
+// WhatsApp doğrulama kodu gönder — tek dosya (panelden yapıştırılabilir)
+// Secret'lar: WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_TEMPLATE, WHATSAPP_LANG (ops.)
 // SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY otomatik gelir.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { cors, json, normalizeTR } from '../_shared/cors.ts'
+
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+const json = (b: unknown, s = 200) =>
+  new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } })
+
+function normalizeTR(raw: string): string | null {
+  let d = (raw || '').replace(/\D/g, '')
+  if (d.startsWith('0')) d = '90' + d.slice(1)
+  if (d.length === 10 && d.startsWith('5')) d = '90' + d
+  if (d.length === 12 && d.startsWith('905')) return '+' + d
+  return null
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
@@ -13,7 +27,6 @@ Deno.serve(async (req) => {
     const anon = Deno.env.get('SUPABASE_ANON_KEY')!
     const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-    // Kullanıcıyı JWT'den çöz
     const userClient = createClient(url, anon, { global: { headers: { Authorization: authHeader } } })
     const { data: { user } } = await userClient.auth.getUser()
     if (!user) return json({ error: 'Giriş yapmalısın.' }, 401)
@@ -24,12 +37,10 @@ Deno.serve(async (req) => {
 
     const admin = createClient(url, service)
 
-    // Bir numaraya tek hesap: başka doğrulanmış hesapta var mı?
     const { data: taken } = await admin.from('profiles')
       .select('id').eq('phone', e164).eq('phone_verified', true).neq('id', user.id).maybeSingle()
     if (taken) return json({ error: 'Bu numara başka bir hesapta kayıtlı.' }, 409)
 
-    // 60 sn hız sınırı
     const { data: prev } = await admin.from('phone_otp').select('last_sent').eq('user_id', user.id).maybeSingle()
     if (prev && Date.now() - new Date(prev.last_sent).getTime() < 60_000)
       return json({ error: 'Çok sık denedin, bir dakika bekle.' }, 429)
@@ -41,7 +52,6 @@ Deno.serve(async (req) => {
     })
     if (upErr) return json({ error: 'Kayıt hatası.' }, 500)
 
-    // WhatsApp Cloud API — authentication şablonu (gövde + kopyala butonu = kod)
     const token = Deno.env.get('WHATSAPP_TOKEN')!
     const phoneId = Deno.env.get('WHATSAPP_PHONE_ID')!
     const template = Deno.env.get('WHATSAPP_TEMPLATE') || 'bireksik_dogrulama'
@@ -65,8 +75,7 @@ Deno.serve(async (req) => {
       }),
     })
     if (!waRes.ok) {
-      const t = await waRes.text()
-      console.error('WA error', waRes.status, t)
+      console.error('WA error', waRes.status, await waRes.text())
       return json({ error: 'WhatsApp mesajı gönderilemedi. Numaranı ve WhatsApp kurulumunu kontrol et.' }, 502)
     }
     return json({ ok: true })

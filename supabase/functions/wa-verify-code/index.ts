@@ -1,6 +1,13 @@
-// WhatsApp doğrulama kodunu kontrol et ve numarayı onayla
+// WhatsApp doğrulama kodunu kontrol et ve numarayı onayla — tek dosya
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { cors, json } from '../_shared/cors.ts'
+
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+const json = (b: unknown, s = 200) =>
+  new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } })
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
@@ -28,7 +35,6 @@ Deno.serve(async (req) => {
       return json({ error: 'Kod yanlış.' }, 400)
     }
 
-    // Numarayı onayla (tekillik DB'de garanti; çakışırsa 409)
     const { error: upErr } = await admin.from('profiles')
       .update({ phone: otp.phone, phone_verified: true }).eq('id', user.id)
     if (upErr) {
