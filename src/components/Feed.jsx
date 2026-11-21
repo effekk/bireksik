@@ -23,7 +23,7 @@ export default function Feed({ matches, onToggle, pending = [], reminders = [], 
         <div>
           {(ME.name || '').trim() && <p className="greet">Merhaba {ME.name.split(' ')[0]} 👋</p>}
           <h1>Bir kişi mi eksik? BirEksik'te bulursun.</h1>
-          <p>Padele partner, rakip ya da halı sahaya eksik oyuncu. Hepsi okuldan.</p>
+          <p>Padele partner, rakip ya da halı sahaya eksik oyuncu.</p>
         </div>
         <div className="hero-stat">
           <span>Bu hafta</span>
