@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ME, USERS } from './data/mock.js'
-import { cancelOffer, createMatch, inviteToMatch, loadAll, loadNotifications, loadOffers, makeOffer, markNotificationsRead, removePhoto, respondOffer, rpc, sendKudos, sendReport, uploadPhoto } from './lib/api.js'
+import { cancelOffer, createMatch, inviteToMatch, loadAll, loadNotifications, loadOffers, makeOffer, markNotificationsRead, removeParticipant, removePhoto, respondOffer, rpc, sendKudos, sendReport, uploadPhoto } from './lib/api.js'
 import ShareSheet from './components/ShareSheet.jsx'
 import { isFull, left, myJoin } from './lib/match.js'
 import { KUDOS_WINDOW_HOURS } from './lib/kudos.js'
@@ -64,6 +64,8 @@ export default function App() {
         id: data.id,
         name: data.name || session.user.email.split('@')[0],
         dept: data.dept,
+        age: data.age || null,
+        gender: data.gender || '',
         trust: data.trust,
         played: data.played,
         phone: data.phone || '',
@@ -91,6 +93,8 @@ export default function App() {
     const completeOnboarding = async (f) => {
       const { data, error } = await supabase.from('profiles').update({
         name: f.name,
+        age: f.age ?? null,
+        gender: f.gender || null,
         sports: f.sports,
         level_padel: f.level.padel,
         level_halisaha: f.level.halisaha,
@@ -100,7 +104,7 @@ export default function App() {
         onboarded: true,
       }).eq('id', profile.id).select().single()
       if (error) throw new Error('Kaydedilemedi: ' + error.message)
-      Object.assign(ME, { name: data.name, instagram: data.instagram || '', photo: data.photo_url || undefined })
+      Object.assign(ME, { name: data.name, age: data.age || null, gender: data.gender || '', instagram: data.instagram || '', photo: data.photo_url || undefined })
       setProfile(data)
     }
     return <Welcome onDone={completeOnboarding} />
@@ -144,12 +148,12 @@ function MainApp({ profile, setProfile, email }) {
     }).eq('id', profile.id)
     if (error) setToast('Kaydedilemedi: ' + trError(error))
   }
-  const saveInfo = async ({ name, phone, instagram }) => {
+  const saveInfo = async ({ name, age, gender, phone, instagram }) => {
     const { data, error } = await supabase.from('profiles')
-      .update({ name, phone: phone || null, instagram: instagram || null })
+      .update({ name, age: age ?? null, gender: gender || null, phone: phone || null, instagram: instagram || null })
       .eq('id', profile.id).select().single()
     if (error) return setToast('Kaydedilemedi: ' + trError(error))
-    Object.assign(ME, { name: data.name, instagram: data.instagram || '' })
+    Object.assign(ME, { name: data.name, age: data.age || null, gender: data.gender || '', instagram: data.instagram || '' })
     setProfile(data)
     setToast('Profilin kaydedildi.')
   }
@@ -255,6 +259,9 @@ function MainApp({ profile, setProfile, email }) {
   // Hatırlatma: "Geliyorum" onayı
   const confirmComing = (id) => run(() => rpc('confirm_attendance', { p_match: id }), 'Harika, geleceğini maçtakilere bildirdik.')
 
+  // İlan sahibi bir katılımcıyı maçtan çıkarır
+  const removePlayer = (matchId, userId) => run(() => removeParticipant(matchId, userId), 'Oyuncu maçtan çıkarıldı; bilgilendirildi.')
+
   // İçinde olduğun ve maça 3 saat ya da daha az kalan maçlar
   const reminders = matches.filter((m) => m.hoursLeft > 0 && m.hoursLeft <= 3 && myJoin(m, ME.id))
 
@@ -301,7 +308,7 @@ function MainApp({ profile, setProfile, email }) {
   if (!loaded) body = <div className="boot">Maçlar yükleniyor…</div>
   else if (route.page === 'detail') {
     const m = matches.find((x) => x.id === route.id)
-    body = m ? <MatchDetail key={m.id} match={m} onToggle={toggleJoin} onShare={setShareId} onCancel={cancelMatch} myPositions={myPositions} /> : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
+    body = m ? <MatchDetail key={m.id} match={m} onToggle={toggleJoin} onShare={setShareId} onCancel={cancelMatch} onRemove={removePlayer} myPositions={myPositions} /> : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
   } else if (route.page === 'kudos') {
     const pm = past.find((x) => x.id === route.id)
     body = pm

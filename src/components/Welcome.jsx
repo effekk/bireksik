@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Logo from './Logo.jsx'
-import { POSITIONS } from '../data/mock.js'
+import { GENDERS, POSITIONS } from '../data/mock.js'
 import { cleanInstagram, SKILL_LEVELS } from '../lib/util.js'
 
 const SPORTS = [{ key: 'padel', label: 'Padel' }, { key: 'halisaha', label: 'Halı saha' }]
@@ -9,6 +9,8 @@ const SPORTS = [{ key: 'padel', label: 'Padel' }, { key: 'halisaha', label: 'Hal
 // İsim ve oynanan sporlar burada bir kerede ayarlanır.
 export default function Welcome({ onDone }) {
   const [name, setName] = useState('')
+  const [age, setAge] = useState('')
+  const [gender, setGender] = useState('')
   const [sports, setSports] = useState(['padel', 'halisaha'])
   const [level, setLevel] = useState({ padel: 'Orta', halisaha: 'Orta' })
   const [positions, setPositions] = useState([])
@@ -28,6 +30,8 @@ export default function Welcome({ onDone }) {
     try {
       await onDone({
         name: name.trim(),
+        age: age ? Number(age) : null,
+        gender: gender || null,
         sports,
         level,
         positions: sports.includes('halisaha') ? positions : [],
@@ -50,6 +54,18 @@ export default function Welcome({ onDone }) {
         <label className="wel-field">Adın <small>(diğer oyuncular bu ismi görecek)</small>
           <input value={name} maxLength={40} autoFocus onChange={(e) => setName(e.target.value)} placeholder="Örn: Efe K." />
         </label>
+
+        <div className="wel-field two">
+          <label>Yaşın <small>(isteğe bağlı)</small>
+            <input type="number" inputMode="numeric" min={13} max={99} value={age} onChange={(e) => setAge(e.target.value)} placeholder="Örn: 21" />
+          </label>
+          <label>Cinsiyet <small>(isteğe bağlı)</small>
+            <select value={gender} onChange={(e) => setGender(e.target.value)}>
+              <option value="">Seçilmedi</option>
+              {GENDERS.map((g) => <option key={g} value={g}>{g}</option>)}
+            </select>
+          </label>
+        </div>
 
         <label className="wel-field">Telefon <small>(maç hatırlatmaları için, isteğe bağlı)</small>
           <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" />

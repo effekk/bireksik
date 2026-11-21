@@ -170,6 +170,7 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
         <Avatar user={u} className="xl" />
         <div className="pp-id">
           <h1>{u.name}</h1>
+          {(u.age || u.gender) && <p className="meta">{[u.age ? `${u.age} yaş` : '', u.gender].filter(Boolean).join(' · ')}</p>}
           <div className="pp-badges">
             <TrustBadge score={u.trust} />
             <span className="pp-played">{u.played} maç</span>

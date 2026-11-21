@@ -1,4 +1,4 @@
-import { ME, POSITIONS, USERS } from '../data/mock.js'
+import { GENDERS, ME, POSITIONS, USERS } from '../data/mock.js'
 import { cleanInstagram, instaUrl, SKILL_LEVELS } from '../lib/util.js'
 import { loadMyProfileExtras, setNotePublic } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
@@ -163,13 +163,26 @@ function sportLine(prefs) {
 // İsim düzenleme
 function InfoEditor({ onSave, onCancel }) {
   const [name, setName] = useState(ME.name)
+  const [age, setAge] = useState(ME.age ? String(ME.age) : '')
+  const [gender, setGender] = useState(ME.gender || '')
   const [phone, setPhone] = useState(ME.phone || '')
   const [instagram, setInstagram] = useState(ME.instagram || '')
   return (
-    <form className="info-edit" onSubmit={(e) => { e.preventDefault(); if (name.trim()) onSave({ name: name.trim(), phone: phone.trim(), instagram: cleanInstagram(instagram) }) }}>
+    <form className="info-edit" onSubmit={(e) => { e.preventDefault(); if (name.trim()) onSave({ name: name.trim(), age: age ? Number(age) : null, gender: gender || null, phone: phone.trim(), instagram: cleanInstagram(instagram) }) }}>
       <label>Adın (diğerleri böyle görecek)
         <input value={name} maxLength={40} onChange={(e) => setName(e.target.value)} placeholder="Örn: Efe K." required />
       </label>
+      <div className="two">
+        <label>Yaşın <small>(isteğe bağlı)</small>
+          <input type="number" inputMode="numeric" min={13} max={99} value={age} onChange={(e) => setAge(e.target.value)} placeholder="Örn: 21" />
+        </label>
+        <label>Cinsiyet <small>(isteğe bağlı)</small>
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">Seçilmedi</option>
+            {GENDERS.map((g) => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </label>
+      </div>
       <label>Telefon <small>(maç hatırlatmaları için)</small>
         <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" />
       </label>
@@ -202,6 +215,7 @@ export default function Profile({ prefs, onPrefs, onSaveInfo, email, onLogout })
           ) : (
             <>
               <h1>{ME.name}</h1>
+              {(ME.age || ME.gender) && <p className="meta">{[ME.age ? `${ME.age} yaş` : '', ME.gender].filter(Boolean).join(' · ')}</p>}
               <p className="meta">{sportLine(prefs)}</p>
               <p className="meta small">{email}</p>
               {ME.instagram && <a className="ig-link" href={instaUrl(ME.instagram)} target="_blank" rel="noopener noreferrer">@{ME.instagram}</a>}

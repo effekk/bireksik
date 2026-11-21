@@ -136,10 +136,16 @@ function defaultPos(match, preferred) {
   return Object.keys(open)[0] || 'Fark etmez'
 }
 
-export default function MatchDetail({ match, onToggle, onShare, onCancel, myPositions = [] }) {
+export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemove = () => {}, myPositions = [] }) {
   const guest = useGuest()
-  const nm = (name) => (guest ? <span className="blurred-text">Bir üye</span> : name)
+  // Katılımcı adı: misafirde bulanık, kendinde düz, başkalarında profiline link
+  const who = (uid, name) => {
+    if (guest) return <span className="blurred-text">Bir üye</span>
+    if (uid === ME.id) return name
+    return <a className="plink" href={'#kisi-' + uid}>{name}</a>
+  }
   const [plus, setPlus] = useState(0)
+  const [confirming, setConfirming] = useState(null) // çıkarılmak istenen kullanıcı id
   const [askCancel, setAskCancel] = useState(false)
   const usesPos = match.sport === 'halisaha' && match.mode !== 'team'
   const [pos, setPos] = useState(() => defaultPos(match, myPositions))
@@ -225,7 +231,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
             <li className="hostrow">
               <Avatar user={host} />
               <span className="who">
-                {nm(host.name)}{match.ready > 1 && <small> ve {match.ready - 1} arkadaşı</small>}
+                {who(match.host, host.name)}{match.ready > 1 && <small> ve {match.ready - 1} arkadaşı</small>}
                 <em>Maçı açan · hazır</em>
               </span>
               <Ig user={host} />
@@ -238,7 +244,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
                 <li key={j.u}>
                   <Avatar user={u} />
                   <span className="who">
-                    {j.team ? <>{j.team}<small> · {nm(u.name)} (kaptan) · {j.plus + 1} kişi</small></> : <>{nm(u.name)}{j.plus > 0 && <small> + {j.plus} arkadaşı</small>}</>}
+                    {j.team ? <>{j.team}<small> · {who(j.u, u.name)} (kaptan) · {j.plus + 1} kişi</small></> : <>{who(j.u, u.name)}{j.plus > 0 && <small> + {j.plus} arkadaşı</small>}</>}
                     {j.pos && <span className="pos-tag">{j.pos}</span>}
                     {j.u === ME.id && <em>Sen</em>}
                     {confirmed[j.u] && <em className="conf" title="Geleceğini onayladı">✓ Geliyor</em>}
@@ -246,6 +252,16 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
                   {top && <span className="ktop" title={`${top.count} kişi "${top.label}" dedi`}><span aria-hidden="true">{top.icon}</span>{top.count}</span>}
                   <Ig user={u} />
                   <TrustBadge score={u.trust} compact />
+                  {isHost && j.u !== ME.id && (
+                    confirming === j.u ? (
+                      <span className="rm-confirm">
+                        <button type="button" className="link danger-link" onClick={() => { onRemove(match.id, j.u); setConfirming(null) }}>Çıkar</button>
+                        <button type="button" className="link muted" onClick={() => setConfirming(null)}>Vazgeç</button>
+                      </span>
+                    ) : (
+                      <button type="button" className="rm-btn" title="Maçtan çıkar" aria-label="Oyuncuyu çıkar" onClick={() => setConfirming(j.u)}>✕</button>
+                    )
+                  )}
                 </li>
               )
             })}
@@ -270,7 +286,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, myPosi
                   {wait.map((id) => (
                     <li key={id}>
                       <Avatar user={USERS[id]} className="sm2" />
-                      <span className="who">{nm(USERS[id].name)}{id === ME.id && <em>Sen</em>}</span>
+                      <span className="who">{who(id, USERS[id].name)}{id === ME.id && <em>Sen</em>}</span>
                       <TrustBadge score={USERS[id].trust} compact />
                     </li>
                   ))}

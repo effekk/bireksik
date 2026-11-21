@@ -6,6 +6,8 @@ export const ME = {
   id: null,
   name: '',
   dept: '',
+  age: null,
+  gender: '',
   trust: 100,
   played: 0,
   cancels: 0,
@@ -13,6 +15,9 @@ export const ME = {
   instagram: '',
   kudos: {},
 }
+
+// Cinsiyet seçenekleri (isteğe bağlı)
+export const GENDERS = ['Kadın', 'Erkek', 'Belirtmek istemiyorum']
 
 export const USERS = {}
 

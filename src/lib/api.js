@@ -303,6 +303,8 @@ function fullUser(p, counts) {
     id: p.id,
     name: p.name || 'İsimsiz',
     dept: p.dept || '',
+    age: p.age || null,
+    gender: p.gender || '',
     trust: p.trust,
     played: p.played,
     photo: p.photo_url || undefined,
@@ -399,5 +401,8 @@ export const inviteToMatch = (to, matchId, note) =>
   rpc('invite_to_match', { p_to: to, p_match: matchId, p_note: note || '' })
 
 export const respondOffer = (id, accept) => rpc('respond_offer', { p_offer: id, p_accept: accept })
+
+// İlan sahibi bir katılımcıyı maçtan çıkarır (çıkarılana bildirim gider)
+export const removeParticipant = (matchId, userId) => rpc('remove_participant', { p_match: matchId, p_user: userId })
 
 export const cancelOffer = (id) => rpc('cancel_offer', { p_offer: id })
