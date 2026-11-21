@@ -8,7 +8,7 @@ export const VENUES = {
     { ilce: 'Balçova', items: ['İzmir Ekonomi Üniversitesi (kampüs)'] },
     { ilce: 'Konak', items: ['Swiss Padel (Swissôtel, Alsancak)'] },
     { ilce: 'Buca', items: ['Pine Padel Club', 'Campus Padel & Pickleball Club (Tınaztepe Ü.)'] },
-    { ilce: 'Bornova', items: ['The Rooftop Padel House'] },
+    { ilce: 'Bornova', items: ['Parla Padel & Tenis', 'The Rooftop Padel House'] },
     { ilce: 'Bayraklı', items: ['Orange Padel Club – Westpark', 'Mistral Carrera'] },
     { ilce: 'Karşıyaka', items: ['Padel Zone Social Club (Mavişehir)', 'CNC Padel (Mavişehir)'] },
     { ilce: 'Gaziemir', items: ['Altın Raket Padel'] },
