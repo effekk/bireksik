@@ -91,7 +91,6 @@ export default function App() {
     const completeOnboarding = async (f) => {
       const { data, error } = await supabase.from('profiles').update({
         name: f.name,
-        dept: f.dept,
         sports: f.sports,
         level_padel: f.level.padel,
         level_halisaha: f.level.halisaha,
@@ -101,7 +100,7 @@ export default function App() {
         onboarded: true,
       }).eq('id', profile.id).select().single()
       if (error) throw new Error('Kaydedilemedi: ' + error.message)
-      Object.assign(ME, { name: data.name, dept: data.dept, instagram: data.instagram || '', photo: data.photo_url || undefined })
+      Object.assign(ME, { name: data.name, instagram: data.instagram || '', photo: data.photo_url || undefined })
       setProfile(data)
     }
     return <Welcome onDone={completeOnboarding} />
@@ -145,12 +144,12 @@ function MainApp({ profile, setProfile, email }) {
     }).eq('id', profile.id)
     if (error) setToast('Kaydedilemedi: ' + trError(error))
   }
-  const saveInfo = async ({ name, dept, phone, instagram }) => {
+  const saveInfo = async ({ name, phone, instagram }) => {
     const { data, error } = await supabase.from('profiles')
-      .update({ name, dept, phone: phone || null, instagram: instagram || null })
+      .update({ name, phone: phone || null, instagram: instagram || null })
       .eq('id', profile.id).select().single()
     if (error) return setToast('Kaydedilemedi: ' + trError(error))
-    Object.assign(ME, { name: data.name, dept: data.dept, instagram: data.instagram || '' })
+    Object.assign(ME, { name: data.name, instagram: data.instagram || '' })
     setProfile(data)
     setToast('Profilin kaydedildi.')
   }

@@ -27,14 +27,14 @@ export default function People({ onOpen }) {
     if (!people) return []
     const s = lower(q.trim())
     if (!s) return people
-    return people.filter((u) => lower(u.name).includes(s) || lower(u.dept).includes(s))
+    return people.filter((u) => lower(u.name).includes(s))
   }, [people, q])
 
   return (
     <div className="people">
       <h1>Kişiler</h1>
       <p className="meta">Oyuncu ara; profiline bak, maç teklif et ya da ilanına davet et.</p>
-      <input className="search" placeholder="İsim veya bölüm ara…" value={q} onChange={(e) => setQ(e.target.value)} autoCapitalize="none" />
+      <input className="search" placeholder="İsim ara…" value={q} onChange={(e) => setQ(e.target.value)} autoCapitalize="none" />
 
       {err && <p className="err">{err}</p>}
       {!people && !err && <p className="meta">Yükleniyor…</p>}
@@ -48,7 +48,6 @@ export default function People({ onOpen }) {
               <Avatar user={u} className="lg" />
               <div className="pc-main">
                 <b>{u.name}</b>
-                {u.dept && <span className="pc-dept">{u.dept}</span>}
                 <span className="pc-sport">{sportSummary(u)}</span>
               </div>
               <div className="pc-side">

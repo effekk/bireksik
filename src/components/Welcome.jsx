@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import Logo from './Logo.jsx'
-import DeptSelect from './DeptSelect.jsx'
 import { POSITIONS } from '../data/mock.js'
 import { cleanInstagram, SKILL_LEVELS } from '../lib/util.js'
 
 const SPORTS = [{ key: 'padel', label: 'Padel' }, { key: 'halisaha', label: 'Halı saha' }]
 
 // İlk giriş karşılama + kurulum ekranı.
-// İsim, bölüm ve oynanan sporlar burada bir kerede ayarlanır.
+// İsim ve oynanan sporlar burada bir kerede ayarlanır.
 export default function Welcome({ onDone }) {
   const [name, setName] = useState('')
-  const [dept, setDept] = useState('')
   const [sports, setSports] = useState(['padel', 'halisaha'])
   const [level, setLevel] = useState({ padel: 'Orta', halisaha: 'Orta' })
   const [positions, setPositions] = useState([])
@@ -30,7 +28,6 @@ export default function Welcome({ onDone }) {
     try {
       await onDone({
         name: name.trim(),
-        dept,
         sports,
         level,
         positions: sports.includes('halisaha') ? positions : [],
@@ -52,10 +49,6 @@ export default function Welcome({ onDone }) {
 
         <label className="wel-field">Adın <small>(diğer oyuncular bu ismi görecek)</small>
           <input value={name} maxLength={40} autoFocus onChange={(e) => setName(e.target.value)} placeholder="Örn: Efe K." />
-        </label>
-
-        <label className="wel-field">Bölümün
-          <DeptSelect value={dept} onChange={setDept} />
         </label>
 
         <label className="wel-field">Telefon <small>(maç hatırlatmaları için, isteğe bağlı)</small>
