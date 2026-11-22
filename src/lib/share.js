@@ -3,8 +3,8 @@ import { isFull, needText } from './match.js'
 
 export const SITE_URL = (typeof window !== 'undefined' && window.location.origin) || 'https://bireksik.pages.dev'
 
-const EMOJI = { padel: '🎾', halisaha: '⚽', tenis: '🎾', voleybol: '🏐', basket: '🏀' }
-const NAME = { padel: 'padel', halisaha: 'halı saha', tenis: 'tenis', voleybol: 'voleybol', basket: 'basket' }
+const EMOJI = { padel: '🎾', halisaha: '⚽', tenis: '🎾', voleybol: '🏐', basket: '🏀', kosu: '🏃' }
+const NAME = { padel: 'padel', halisaha: 'halı saha', tenis: 'tenis', voleybol: 'voleybol', basket: 'basket', kosu: 'koşu' }
 
 export function matchLink(m) {
   return `${SITE_URL}/#mac-${m.id}`
@@ -12,5 +12,6 @@ export function matchLink(m) {
 
 export function shareText(m) {
   const need = isFull(m) ? 'kadro tamam, yedek alınıyor' : needText(m).toLowerCase()
-  return `${EMOJI[m.sport]} ${m.day} ${m.time} ${NAME[m.sport]} · ${need}\n${m.place} · Seviye: ${m.level}\nKatılmak için 👉 ${matchLink(m)}`
+  const lvl = m.sport === 'kosu' ? `Tempo: ${m.level}` : `Seviye: ${m.level}`
+  return `${EMOJI[m.sport]} ${m.day} ${m.time} ${NAME[m.sport]} · ${need}\n${m.place} · ${lvl}\nKatılmak için 👉 ${matchLink(m)}`
 }

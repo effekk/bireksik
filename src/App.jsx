@@ -337,7 +337,7 @@ function MainApp({ profile, setProfile, email }) {
       ? <Kudos key={pm.id} match={pm} done={!!kudosDone[pm.id] || pm.given} reports={reports[pm.id] || []} onSubmit={submitKudos} onReport={report} />
       : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
   } else if (route.page === 'olustur') body = <CreateMatch onCreate={addMatch} />
-  else if (route.page === 'profil') body = <Profile prefs={prefs} onPrefs={setPrefs} onSaveInfo={saveInfo} alerts={{ padel: !!profile.alert_padel, halisaha: !!profile.alert_halisaha, tenis: !!profile.alert_tenis, voleybol: !!profile.alert_voleybol, basket: !!profile.alert_basket }} onAlert={setAlert} email={email} onLogout={logout} />
+  else if (route.page === 'profil') body = <Profile prefs={prefs} onPrefs={setPrefs} onSaveInfo={saveInfo} alerts={{ padel: !!profile.alert_padel, halisaha: !!profile.alert_halisaha, tenis: !!profile.alert_tenis, voleybol: !!profile.alert_voleybol, basket: !!profile.alert_basket, kosu: !!profile.alert_kosu }} onAlert={setAlert} email={email} onLogout={logout} />
   else if (route.page === 'kisiler') body = <People onOpen={(id) => go('kisi-' + id)} />
   else if (route.page === 'person') body = <PublicProfile key={route.id} id={route.id} myMatches={matches.filter((m) => m.host === ME.id)} onOffer={sendOffer} onInvite={sendInvite} busy={busy} />
   else if (route.page === 'teklifler') body = <Offers incoming={offers.incoming} outgoing={offers.outgoing} onRespond={answerOffer} onCancel={withdrawOffer} busy={busy} />

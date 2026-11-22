@@ -52,7 +52,7 @@ function OfferForm({ name, onSend, onClose, busy }) {
     <form className="offer-form panel" onSubmit={submit}>
       <h3>{name} ile maç · teklif</h3>
       <div className="seg" role="radiogroup" aria-label="Spor">
-        {SPORTS.map((s) => (
+        {SPORTS.filter((s) => s.key !== 'kosu').map((s) => (
           <button type="button" key={s.key} className={'seg-btn ' + s.key + (sport === s.key ? ' on' : '')} onClick={() => pickSport(s.key)}>{s.label}</button>
         ))}
       </div>
@@ -196,6 +196,7 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
         {(u.sports || []).length === 0 && <p className="meta small">Belirtilmemiş.</p>}
         <ul className="pp-sports">
           {SPORTS.filter((s) => (u.sports || []).includes(s.key)).map((s) => {
+            if (s.key === 'kosu') return <li key={s.key}><b>{s.label}</b><span>🏃</span></li>
             const lvl = { padel: u.levelPadel, halisaha: u.levelHalisaha, tenis: u.levelTenis, voleybol: u.levelVoleybol, basket: u.levelBasket }[s.key]
             const extra = s.key === 'halisaha' && u.positions?.length ? ` · ${u.positions.join(', ')}` : ''
             return <li key={s.key}><b>{s.label}</b><span>{lvl || 'Orta'}{extra}</span></li>

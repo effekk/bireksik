@@ -101,7 +101,7 @@ function SportPrefs({ prefs, onChange }) {
                 <b>{s.label}</b>
                 <span>{on ? 'Oynuyorum' : 'Oynamıyorum'}</span>
               </label>
-              {on && (
+              {on && s.key !== 'kosu' && (
                 <div className="sport-body">
                   <label>Seviyen
                     <select value={level[s.key] || 'Orta'} onChange={(e) => onChange({ ...prefs, level: { ...level, [s.key]: e.target.value } })}>
@@ -133,6 +133,7 @@ function SportPrefs({ prefs, onChange }) {
 
 function sportLine(prefs) {
   return SPORTS.filter((s) => prefs.sports.includes(s.key)).map((s) => {
+    if (s.key === 'kosu') return s.label
     const lvl = prefs.level[s.key] || 'Orta'
     const pos = s.key === 'halisaha' && prefs.positions.length ? ` (${prefs.positions.join(', ')})` : ''
     return `${s.label}: ${lvl}${pos}`
@@ -177,7 +178,7 @@ function InfoEditor({ onSave, onCancel }) {
 }
 
 // Yeni ilan bildirim tercihleri
-const SPORT_EMOJI = { padel: '🎾', halisaha: '⚽', tenis: '🎾', voleybol: '🏐', basket: '🏀' }
+const SPORT_EMOJI = { padel: '🎾', halisaha: '⚽', tenis: '🎾', voleybol: '🏐', basket: '🏀', kosu: '🏃' }
 function AlertPrefs({ alerts, onAlert }) {
   return (
     <section className="panel">

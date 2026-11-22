@@ -10,6 +10,7 @@ export const SPORT = {
   tenis: { label: 'Tenis', cls: 'tenis' },
   voleybol: { label: 'Voleybol', cls: 'voleybol' },
   basket: { label: 'Basket', cls: 'basket' },
+  kosu: { label: 'Koşu', cls: 'kosu' },
 }
 
 export const ShareIcon = () => (
@@ -27,6 +28,7 @@ export default function MatchCard({ match, onToggle, onShare }) {
   const waiting = wait.includes(ME.id)
   const team = match.mode === 'team'
   const isHost = match.host === ME.id
+  const kosu = match.sport === 'kosu'
 
   let label = 'Katıl'
   if (isHost) label = 'Senin maçın'
@@ -50,10 +52,10 @@ export default function MatchCard({ match, onToggle, onShare }) {
         </div>
         <div className="card-body">
           <h3>{title(match)}</h3>
-          <p className="meta">{match.place} · {match.size} kişilik · {match.level}</p>
+          <p className="meta">{match.place}{kosu ? '' : ` · ${match.size} kişilik`} · {kosu ? `Pace ${match.level}` : match.level}</p>
           <div className="card-row">
-            <Slots match={match} />
-            <span className={'need' + (full ? ' done' : '')}>{needText(match)}</span>
+            <Slots match={match} hideEmpty={kosu} />
+            {!kosu && <span className={'need' + (full ? ' done' : '')}>{needText(match)}</span>}
             {wait.length > 0 && <span className="wait-tag">{wait.length} yedek</span>}
           </div>
           {!full && Object.keys(openPositions(match)).length > 0 && (

@@ -29,6 +29,7 @@ export const openPosCount = (m) => Object.values(openPositions(m)).reduce((a, b)
 export const freeSlots = (m) => Math.max(0, left(m) - openPosCount(m))
 
 export function title(m) {
+  if (m.sport === 'kosu') return isFull(m) ? 'Eşlikçi bulundu' : 'Eşlikçi aranıyor'
   if (isFull(m)) return 'Kadro tamam'
   if (m.mode === 'team') return m.sport === 'padel' ? 'Rakip ikili arıyoruz' : 'Rakip takım arıyoruz'
   if (m.sport === 'padel' && m.ready === 1 && filled(m) === 0) return 'Partner ve rakip arıyorum'
@@ -36,6 +37,7 @@ export function title(m) {
 }
 
 export function needText(m) {
+  if (m.sport === 'kosu') return isFull(m) ? 'Eşlikçi bulundu' : 'Eşlikçi aranıyor'
   if (isFull(m)) return 'Kadro tamam'
   if (m.mode === 'team') return `${need(m)} kişilik takım aranıyor`
   return `${left(m)} kişi aranıyor`

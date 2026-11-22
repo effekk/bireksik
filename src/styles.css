@@ -809,3 +809,14 @@ html.reveal-ready .reveal.in { opacity: 1; transform: none; }
 .tenis .wel-check.on { background: var(--tennis); border-color: var(--tennis); }
 .voleybol .wel-check.on { background: var(--volley); border-color: var(--volley); }
 .basket .wel-check.on { background: var(--basket); border-color: var(--basket); }
+
+/* --- Koşu rengi --- */
+.seg-btn.on.kosu { background: var(--run); color: #fff; }
+.sport-tag.kosu, .kosu .sport-tag { background: var(--run); }
+.kosu .need { color: var(--run); }
+.sport-card.on.kosu { border-color: var(--run); }
+.sport-card.on.kosu .sport-head { background: color-mix(in srgb, var(--run) 8%, var(--bg)); }
+.kosu .sport-head input { accent-color: var(--run); }
+.wel-sport.on.kosu { border-color: var(--run); }
+.wel-sport.on.kosu .wel-sport-head { background: color-mix(in srgb, var(--run) 8%, var(--bg)); }
+.kosu .wel-check.on { background: var(--run); border-color: var(--run); }

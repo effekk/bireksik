@@ -28,6 +28,7 @@ export const SPORTS = [
   { key: 'tenis', label: 'Tenis' },
   { key: 'voleybol', label: 'Voleybol' },
   { key: 'basket', label: 'Basket' },
+  { key: 'kosu', label: 'Koşu' },
 ]
 export const SPORT_KEYS = SPORTS.map((s) => s.key)
 
@@ -53,6 +54,8 @@ export const MODES = {
   tenis: [{ key: 'players', label: 'Oyuncu / rakip arıyorum' }],
   voleybol: [{ key: 'players', label: 'Oyuncu arıyorum' }],
   basket: [{ key: 'players', label: 'Oyuncu arıyorum' }],
+  // Koşu: kadro yok, sadece birlikte koşacak eşlikçi aranır
+  kosu: [{ key: 'players', label: 'Eşlikçi arıyorum' }],
 }
 
 export const LEVELS = ['Yeni başladım', 'Başlangıç', 'Orta', 'İyi', 'İleri', 'Fark etmez']

@@ -24,7 +24,10 @@ const DEFAULTS = {
   tenis: { size: 2, ready: 1, team: 2 },
   voleybol: { size: 12, ready: 6, team: 6 },
   basket: { size: 10, ready: 5, team: 5 },
+  kosu: { size: 6, ready: 1, team: 2 },
 }
+// Koşu temposu (dk/km): 4–15
+const PACES = Array.from({ length: 12 }, (_, i) => `${i + 4} dk/km`)
 
 export default function CreateMatch({ onCreate }) {
   const days = nextDays()
@@ -36,7 +39,9 @@ export default function CreateMatch({ onCreate }) {
   const num = (v) => Number(v) || 0
 
   const setSport = (sport) =>
-    setF((s) => ({ ...s, sport, mode: 'players', place: '', wanted: {}, ...DEFAULTS[sport] }))
+    setF((s) => ({ ...s, sport, mode: 'players', place: '', wanted: {}, level: sport === 'kosu' ? '6 dk/km' : 'Orta', ...DEFAULTS[sport] }))
+
+  const isKosu = f.sport === 'kosu'
 
   // Takım modunda maç büyüklüğü takım × 2; oyuncu modunda aranan = toplam − hazır
   const isTeam = f.mode === 'team'
@@ -73,7 +78,7 @@ export default function CreateMatch({ onCreate }) {
         ))}
       </div>
 
-      <div className="mode-pick" role="radiogroup" aria-label="Ne arıyorsun">
+      {!isKosu && <div className="mode-pick" role="radiogroup" aria-label="Ne arıyorsun">
         {MODES[f.sport].map((m) => (
           <button type="button" key={m.key} className={'mode-btn' + (f.mode === m.key ? ' on' : '')} onClick={() => set('mode', m.key)}>
             <b>{m.label}</b>
@@ -84,9 +89,9 @@ export default function CreateMatch({ onCreate }) {
             </small>
           </button>
         ))}
-      </div>
+      </div>}
 
-      {isTeam ? (
+      {!isKosu && (isTeam ? (
         f.sport === 'halisaha' && (
           <label>Takımın kaç kişi?
             <input type="number" min={4} max={11} value={f.team} onChange={(e) => set('team', e.target.value)} />
@@ -103,14 +108,16 @@ export default function CreateMatch({ onCreate }) {
             <input type="number" min={1} max={size - 1} value={f.ready} onChange={(e) => set('ready', e.target.value)} />
           </label>
         </div>
-      )}
+      ))}
 
       <div className={'summary' + (valid ? '' : ' bad')}>
         {valid
-          ? isTeam
+          ? isKosu
+            ? <>İlan açılınca <b>seninle koşmak isteyenler</b> sana katılır. Kaç kişi istediğini belirtmene gerek yok.</>
+            : isTeam
             ? <>İlanda <b>{teamSize} kişilik bir rakip {f.sport === 'padel' ? 'ikili' : 'takım'}</b> aranacak. Maç toplam {size} kişi.</>
             : <>İlanda <b>{seeking} kişi</b> aranacak. Hazır olan {ready} kişinin uygulamadan katılmasına gerek yok.</>
-          : !inFuture ? 'Maç saati geçmiş görünüyor. İleri bir saat seç.' : posTotal > seeking ? `Aranan pozisyon sayısı (${posTotal}) aranan kişi sayısından (${seeking}) fazla olamaz.` : !f.place.trim() ? 'Bir saha seç (ilçe veya isimle arayabilirsin).' : 'Hazır olan kişi sayısı toplamdan az olmalı.'}
+          : !inFuture ? 'Saat geçmiş görünüyor. İleri bir saat seç.' : posTotal > seeking ? `Aranan pozisyon sayısı (${posTotal}) aranan kişi sayısından (${seeking}) fazla olamaz.` : !f.place.trim() ? (isKosu ? 'Nerede koşacağını yaz.' : 'Bir saha seç (ilçe veya isimle arayabilirsin).') : 'Hazır olan kişi sayısı toplamdan az olmalı.'}
       </div>
 
       {usesPos && seeking >= 1 && (
@@ -149,12 +156,14 @@ export default function CreateMatch({ onCreate }) {
       </div>
 
       <div className="two">
-        <label>Yer
-          <VenueSelect list={VENUES[f.sport]} value={f.place} onChange={(v) => set('place', v)} />
+        <label>{isKosu ? 'Nerede koşacaksın?' : 'Yer'}
+          {isKosu
+            ? <input type="text" maxLength={80} value={f.place} onChange={(e) => set('place', e.target.value)} placeholder="Örn: Bostanlı sahili, Kültürpark" />
+            : <VenueSelect list={VENUES[f.sport]} value={f.place} onChange={(v) => set('place', v)} />}
         </label>
-        <label>Seviye
+        <label>{isKosu ? 'Tempo (dk/km)' : 'Seviye'}
           <select value={f.level} onChange={(e) => set('level', e.target.value)}>
-            {LEVELS.map((l) => <option key={l}>{l}</option>)}
+            {(isKosu ? PACES : LEVELS).map((l) => <option key={l}>{l}</option>)}
           </select>
         </label>
       </div>

@@ -201,6 +201,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
   const waiting = wait.includes(ME.id)
   const confirmed = match.confirmed || {}
   const team = match.mode === 'team'
+  const kosu = match.sport === 'kosu'
   const host = USERS[match.host]
   const isHost = match.host === ME.id
 
@@ -235,9 +236,9 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
           <h1>{title(match)}</h1>
           <p className="when"><b>{match.day}</b> · {match.time}</p>
           <dl className="facts">
-            <div><dt>Yer</dt><dd>{match.place}</dd></div>
-            <div><dt>Seviye</dt><dd>{match.level}</dd></div>
-            <div><dt>Maç</dt><dd>{match.size} kişilik · {match.ready} kişi hazır</dd></div>
+            <div><dt>{kosu ? 'Rota' : 'Yer'}</dt><dd>{match.place}</dd></div>
+            <div><dt>{kosu ? 'Tempo' : 'Seviye'}</dt><dd>{match.level}</dd></div>
+            {!kosu && <div><dt>Maç</dt><dd>{match.size} kişilik · {match.ready} kişi hazır</dd></div>}
             <div><dt>Puan şartı</dt><dd>{match.minTrust ? `En az ${match.minTrust}` : 'Yok'}</dd></div>
             {Object.keys(openPos).length > 0 && (
               <div className="wide"><dt>Aranan pozisyon</dt><dd>{Object.entries(openPos).map(([p, n]) => (n > 1 ? `${n} ${p}` : p)).join(', ')}</dd></div>
@@ -325,7 +326,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
                 </li>
               )
             })}
-            {empty > 0 && (team ? (
+            {!kosu && empty > 0 && (team ? (
               <li className="open"><span className="avatar empty" /><span className="who">{empty} kişilik rakip takım bekleniyor</span></li>
             ) : [
               ...Object.entries(openPos).flatMap(([p, n]) => Array.from({ length: n }, () => p)),
@@ -333,7 +334,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
             ].slice(0, 6).map((p, i) => (
               <li key={'e' + i} className="open"><span className="avatar empty" /><span className="who">Boş yer{p && <span className="pos-tag want">{p} aranıyor</span>}</span></li>
             )))}
-            {!team && empty > 6 && <li className="open"><span className="who">+{empty - 6} boş yer daha</span></li>}
+            {!kosu && !team && empty > 6 && <li className="open"><span className="who">+{empty - 6} boş yer daha</span></li>}
           </ul>
 
           {!team && (full || wait.length > 0) && (

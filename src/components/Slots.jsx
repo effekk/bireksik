@@ -3,11 +3,11 @@ import Avatar from './Avatar.jsx'
 import { left, listingSeats } from '../lib/match.js'
 
 // Sadece ilandaki yerler: katılanlar (ve getirdikleri) + boş yerler
-export default function Slots({ match, max = 6 }) {
+export default function Slots({ match, max = 6, hideEmpty = false }) {
   const seats = listingSeats(match)
   const shown = seats.slice(0, max)
   const extra = seats.length - shown.length
-  const empty = left(match)
+  const empty = hideEmpty ? 0 : left(match)
   return (
     <div className="slots" aria-label={`${seats.length} dolu, ${empty} boş`}>
       {shown.map((s, i) =>

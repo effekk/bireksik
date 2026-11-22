@@ -1,12 +1,13 @@
 -- 22_new_sports.sql
--- Siteyi büyütüyoruz: tenis, voleybol, basket eklendi.
+-- Siteyi büyütüyoruz: tenis, voleybol, basket ve koşu eklendi.
 -- Padel ve halı saha aynen kalır; yeni sporlar esnek kadroludur (kişi sayısını ilan sahibi belirler).
+-- Koşu'da kadro yoktur; sadece eşlikçi aranır, yer manuel yazılır, seviye yerine tempo tutulur.
 -- Güvenle tekrar tekrar çalıştırılabilir.
 
--- 1) Profilde oynanan spor listesi: 5 spora izin ver
+-- 1) Profilde oynanan spor listesi: 6 spora izin ver
 alter table public.profiles drop constraint if exists profiles_sports_check;
 alter table public.profiles add constraint profiles_sports_check
-  check (sports <@ array['padel','halisaha','tenis','voleybol','basket']
+  check (sports <@ array['padel','halisaha','tenis','voleybol','basket','kosu']
          and cardinality(sports) >= 1);
 
 -- 2) Yeni sporlar için seviye sütunları (padel/halı saha ile aynı 5 kademe)
@@ -30,13 +31,15 @@ grant update (level_tenis, level_voleybol, level_basket) on public.profiles to a
 alter table public.profiles add column if not exists alert_tenis    boolean not null default false;
 alter table public.profiles add column if not exists alert_voleybol boolean not null default false;
 alter table public.profiles add column if not exists alert_basket   boolean not null default false;
-grant update (alert_tenis, alert_voleybol, alert_basket) on public.profiles to authenticated;
+alter table public.profiles add column if not exists alert_kosu     boolean not null default false;
+grant update (alert_tenis, alert_voleybol, alert_basket, alert_kosu) on public.profiles to authenticated;
 
--- 4) Maç tablosunda spor türü: 5 spora izin ver
+-- 4) Maç tablosunda spor türü: 6 spora izin ver
 --    (padel = 4 kişi kuralı olduğu gibi kalır; o kısıta dokunmuyoruz)
+--    Koşu da esnek kadro kullanır: size/ready mevcut kısıtlara uyar (size 6, ready 1).
 alter table public.matches drop constraint if exists matches_sport_check;
 alter table public.matches add constraint matches_sport_check
-  check (sport in ('padel','halisaha','tenis','voleybol','basket'));
+  check (sport in ('padel','halisaha','tenis','voleybol','basket','kosu'));
 
 -- 5) Yeni ilan bildirimini tüm sporlara genişlet
 create or replace function public._alert_new_match()
@@ -50,6 +53,7 @@ begin
     when 'tenis' then 'tenis'
     when 'voleybol' then 'voleybol'
     when 'basket' then 'basket'
+    when 'kosu' then 'koşu'
     else new.sport end;
   whentxt := _tr_datetime(new.starts_at) || ' · ' || new.place;
   for p in
@@ -59,10 +63,14 @@ begin
         or (new.sport = 'halisaha' and alert_halisaha)
         or (new.sport = 'tenis'    and alert_tenis)
         or (new.sport = 'voleybol' and alert_voleybol)
-        or (new.sport = 'basket'   and alert_basket))
+        or (new.sport = 'basket'   and alert_basket)
+        or (new.sport = 'kosu'     and alert_kosu))
   loop
     perform _notify(p.id, 'new_match',
-      'Yeni ' || sportlbl || ' maçı açıldı: ' || whentxt || '. Kadroda yerini kapabilirsin!', new.id);
+      case when new.sport = 'kosu'
+        then 'Yeni koşu ilanı açıldı: ' || whentxt || '. Eşlik etmek ister misin?'
+        else 'Yeni ' || sportlbl || ' maçı açıldı: ' || whentxt || '. Kadroda yerini kapabilirsin!' end,
+      new.id);
   end loop;
   return new;
 end $$;

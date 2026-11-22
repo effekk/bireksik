@@ -86,7 +86,7 @@ export default function Welcome({ onDone }) {
                     <span className={'wel-check' + (on ? ' on' : '')} aria-hidden="true">{on ? '✓' : ''}</span>
                     <b>{s.label}</b>
                   </button>
-                  {on && (
+                  {on && s.key !== 'kosu' && (
                     <div className="wel-sport-body">
                       <label>Seviyen
                         <select value={level[s.key]} onChange={(e) => setLevel((l) => ({ ...l, [s.key]: e.target.value }))}>
