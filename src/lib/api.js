@@ -406,4 +406,7 @@ export const respondOffer = (id, accept) => rpc('respond_offer', { p_offer: id, 
 // İlan sahibi bir katılımcıyı maçtan çıkarır (çıkarılana bildirim gider)
 export const removeParticipant = (matchId, userId) => rpc('remove_participant', { p_match: matchId, p_user: userId })
 
+// Padel: katıldıktan sonra taraf değiştir (Üst/Alt)
+export const setMatchSide = (matchId, side) => rpc('set_match_side', { p_match: matchId, p_side: side })
+
 export const cancelOffer = (id) => rpc('cancel_offer', { p_offer: id })

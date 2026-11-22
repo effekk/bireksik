@@ -179,7 +179,7 @@ function defaultPos(match, preferred) {
   return Object.keys(open)[0] || 'Fark etmez'
 }
 
-export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemove = () => {}, onInvite = () => {}, myPositions = [] }) {
+export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemove = () => {}, onInvite = () => {}, onSwitchSide = () => {}, myPositions = [] }) {
   const guest = useGuest()
   const [showInvite, setShowInvite] = useState(false)
   // Katılımcı adı: misafirde bulanık, kendinde düz, başkalarında profiline link
@@ -208,9 +208,15 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
   const joinOpts = { plus: Math.min(plus, plusMax), ...(usesPos && pos !== 'Fark etmez' ? { pos } : {}) }
   const openPos = openPositions(match)
 
-  // Padel: boş korta tıklayınca o tarafa katıl (taraf 'pos'ta tutulur)
-  const canPickSide = match.sport === 'padel' && match.mode !== 'team' && !guest && !isHost && !mine && !full
-  const pickSide = (side) => onToggle(match.id, { pos: side, plus: Math.min(plus, Math.max(0, empty - 1)) })
+  // Padel: boş korta tıklayınca o tarafa katıl; katıldıysan taraf değiştir
+  const padelPlayers = match.sport === 'padel' && match.mode !== 'team'
+  const canSwitchCourt = padelPlayers && !guest && Boolean(mine) && !mine.team && !full
+  const canJoinCourt = padelPlayers && !guest && !isHost && !mine && !full
+  const canPickSide = canJoinCourt || canSwitchCourt
+  const pickSide = (side) => {
+    if (mine) onSwitchSide(match.id, side)
+    else onToggle(match.id, { pos: side, plus: Math.min(plus, Math.max(0, empty - 1)) })
+  }
 
   let mainBtn = null
   if (isHost) mainBtn = <span className="hint">Bu maçı sen açtın. Linki paylaşarak eksikleri daha hızlı bulabilirsin.</span>
@@ -278,7 +284,7 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
 
         <section className="detail-board">
           {match.sport === 'padel' && <PadelCourt match={match} onPick={pickSide} canPick={canPickSide} />}
-          {canPickSide && <p className="court-hint">Tarafını seçmek için korttaki boş yere dokun.</p>}
+          {canPickSide && <p className="court-hint">{mine ? 'Taraf değiştirmek için boş yere dokun.' : 'Tarafını seçmek için korttaki boş yere dokun.'}</p>}
           <h2>{needText(match)}</h2>
           <ul className="roster">
             <li className="hostrow">

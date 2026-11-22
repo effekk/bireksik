@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ME, USERS } from './data/mock.js'
-import { cancelOffer, createMatch, inviteToMatch, loadAll, loadNotifications, loadOffers, makeOffer, markNotificationsRead, removeParticipant, removePhoto, respondOffer, rpc, sendKudos, sendReport, uploadPhoto } from './lib/api.js'
+import { cancelOffer, createMatch, inviteToMatch, loadAll, loadNotifications, loadOffers, makeOffer, markNotificationsRead, removeParticipant, removePhoto, respondOffer, rpc, sendKudos, sendReport, setMatchSide, uploadPhoto } from './lib/api.js'
 import ShareSheet from './components/ShareSheet.jsx'
 import { isFull, left, myJoin } from './lib/match.js'
 import { KUDOS_WINDOW_HOURS } from './lib/kudos.js'
@@ -272,6 +272,9 @@ function MainApp({ profile, setProfile, email }) {
   // İlan sahibi bir katılımcıyı maçtan çıkarır
   const removePlayer = (matchId, userId) => run(() => removeParticipant(matchId, userId), 'Oyuncu maçtan çıkarıldı; bilgilendirildi.')
 
+  // Padel: taraf değiştir
+  const switchSide = (matchId, side) => run(() => setMatchSide(matchId, side), 'Tarafın güncellendi.')
+
   // İçinde olduğun ve maça 3 saat ya da daha az kalan maçlar
   const reminders = matches.filter((m) => m.hoursLeft > 0 && m.hoursLeft <= 3 && myJoin(m, ME.id))
 
@@ -318,7 +321,7 @@ function MainApp({ profile, setProfile, email }) {
   if (!loaded) body = <div className="boot">Maçlar yükleniyor…</div>
   else if (route.page === 'detail') {
     const m = matches.find((x) => x.id === route.id)
-    body = m ? <MatchDetail key={m.id} match={m} onToggle={toggleJoin} onShare={setShareId} onCancel={cancelMatch} onRemove={removePlayer} onInvite={sendInvite} myPositions={myPositions} /> : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
+    body = m ? <MatchDetail key={m.id} match={m} onToggle={toggleJoin} onShare={setShareId} onCancel={cancelMatch} onRemove={removePlayer} onInvite={sendInvite} onSwitchSide={switchSide} myPositions={myPositions} /> : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
   } else if (route.page === 'kudos') {
     const pm = past.find((x) => x.id === route.id)
     body = pm
