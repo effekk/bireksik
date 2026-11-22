@@ -318,7 +318,7 @@ function MainApp({ profile, setProfile, email }) {
   if (!loaded) body = <div className="boot">Maçlar yükleniyor…</div>
   else if (route.page === 'detail') {
     const m = matches.find((x) => x.id === route.id)
-    body = m ? <MatchDetail key={m.id} match={m} onToggle={toggleJoin} onShare={setShareId} onCancel={cancelMatch} onRemove={removePlayer} myPositions={myPositions} /> : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
+    body = m ? <MatchDetail key={m.id} match={m} onToggle={toggleJoin} onShare={setShareId} onCancel={cancelMatch} onRemove={removePlayer} onInvite={sendInvite} myPositions={myPositions} /> : <Feed matches={matches} onToggle={toggleJoin} pending={pending} reminders={reminders} onConfirm={confirmComing} onShare={setShareId} mySports={prefs.sports} />
   } else if (route.page === 'kudos') {
     const pm = past.find((x) => x.id === route.id)
     body = pm

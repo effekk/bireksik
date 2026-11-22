@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ME, USERS } from '../data/mock.js'
 import TrustBadge from './TrustBadge.jsx'
 import { SPORT, ShareIcon } from './MatchCard.jsx'
 import Avatar, { usePhotos } from './Avatar.jsx'
 import { useGuest } from '../lib/guest.js'
+import { loadPeople } from '../lib/api.js'
 import { topKudos } from '../lib/kudos.js'
 import { instaUrl } from '../lib/util.js'
 import { allSeats, freeSlots, isFull, left, myJoin, need, needText, openPositions, title } from '../lib/match.js'
@@ -20,13 +21,22 @@ function Ig({ user }) {
 }
 
 // Padel: 2'ye 2 kort çizimi. Üst yarı maçı açanın tarafı, alt yarı ilandan gelenler.
-function PadelCourt({ match }) {
+function PadelCourt({ match, onPick, canPick }) {
   const { photos } = usePhotos()
-  const seats = allSeats(match)
   const spots = [
-    { x: 80, y: 70 }, { x: 220, y: 70 },
-    { x: 80, y: 190 }, { x: 220, y: 190 },
+    { x: 80, y: 70, side: 'Üst' }, { x: 220, y: 70, side: 'Üst' },
+    { x: 80, y: 190, side: 'Alt' }, { x: 220, y: 190, side: 'Alt' },
   ]
+  // Oyuncuları seçtikleri tarafa yerleştir (Üst = maçı açanın tarafı)
+  const top = [{ u: match.host }]
+  for (let i = 1; i < match.ready; i++) top.push({ u: match.host, guest: true })
+  const bot = []
+  for (const j of (match.joins || [])) {
+    const party = [{ u: j.u }, ...Array.from({ length: j.plus || 0 }, () => ({ u: j.u, guest: true }))]
+    const dest = j.pos === 'Alt' ? bot : j.pos === 'Üst' ? top : (top.length <= bot.length ? top : bot)
+    dest.push(...party)
+  }
+  const occ = [top[0], top[1], bot[0], bot[1]]
   return (
     <svg viewBox="0 0 300 260" className="court" role="img" aria-label="Padel kortu oyuncu yerleri">
       <rect x="10" y="10" width="280" height="240" rx="14" fill="var(--court)" />
@@ -36,17 +46,19 @@ function PadelCourt({ match }) {
       <line x1="30" y1="65" x2="270" y2="65" stroke="#fff" strokeOpacity=".8" strokeWidth="2" />
       <line x1="30" y1="195" x2="270" y2="195" stroke="#fff" strokeOpacity=".8" strokeWidth="2" />
       {spots.map((s, i) => {
-        const seat = seats[i]
-        const p = seat && USERS[seat.u]
+        const o = occ[i]
+        const p = o && USERS[o.u]
         if (!p) {
+          const clickable = Boolean(canPick && onPick)
           return (
-            <g key={i}>
+            <g key={i} onClick={clickable ? () => onPick(s.side) : undefined} style={clickable ? { cursor: 'pointer' } : undefined}>
+              {clickable && <circle cx={s.x} cy={s.y} r="27" fill="var(--ball)" fillOpacity=".14" />}
               <circle cx={s.x} cy={s.y} r="23" fill="none" stroke="var(--ball)" strokeWidth="3" strokeDasharray="6 5" />
               <text x={s.x} y={s.y + 8} textAnchor="middle" fontSize="24" fontWeight="700" fill="var(--ball)">+</text>
             </g>
           )
         }
-        if (seat.guest) {
+        if (o.guest) {
           return (
             <g key={i}>
               <circle cx={s.x} cy={s.y} r="24" fill="#fff" fillOpacity=".55" />
@@ -68,6 +80,37 @@ function PadelCourt({ match }) {
         )
       })}
     </svg>
+  )
+}
+
+// İlan sayfasından oyuncu davet etme paneli
+function InvitePanel({ match, onInvite, onClose }) {
+  const [people, setPeople] = useState(null)
+  const [q, setQ] = useState('')
+  const [sent, setSent] = useState({})
+  useEffect(() => { loadPeople().then(setPeople).catch(() => setPeople([])) }, [])
+  const taken = new Set([match.host, ...(match.joins || []).map((j) => j.u), ...(match.waitlist || []).map((w) => w.u)])
+  const s = q.trim().toLowerCase()
+  const list = (people || []).filter((u) => !taken.has(u.id) && (u.name || '').toLowerCase().includes(s))
+  return (
+    <section className="panel invite-panel">
+      <div className="ip-head"><h3>Oyuncu davet et</h3><button type="button" className="link" onClick={onClose}>Kapat</button></div>
+      <input className="search" placeholder="İsim ara…" value={q} onChange={(e) => setQ(e.target.value)} autoCapitalize="none" />
+      {people === null && <p className="meta small">Yükleniyor…</p>}
+      {people && list.length === 0 && <p className="meta small">Davet edilebilecek kişi bulunamadı.</p>}
+      <ul className="ip-list">
+        {list.slice(0, 25).map((u) => (
+          <li key={u.id}>
+            <Avatar user={u} />
+            <span className="who"><a className="plink" href={'#kisi-' + u.id}>{u.name}</a></span>
+            <TrustBadge score={u.trust} compact />
+            <button type="button" className="btn sm ghost" disabled={sent[u.id]} onClick={() => { onInvite(u.id, match.id); setSent((x) => ({ ...x, [u.id]: true })) }}>
+              {sent[u.id] ? 'Davet edildi ✓' : 'Davet et'}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
@@ -136,8 +179,9 @@ function defaultPos(match, preferred) {
   return Object.keys(open)[0] || 'Fark etmez'
 }
 
-export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemove = () => {}, myPositions = [] }) {
+export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemove = () => {}, onInvite = () => {}, myPositions = [] }) {
   const guest = useGuest()
+  const [showInvite, setShowInvite] = useState(false)
   // Katılımcı adı: misafirde bulanık, kendinde düz, başkalarında profiline link
   const who = (uid, name) => {
     if (guest) return <span className="blurred-text">Bir üye</span>
@@ -163,6 +207,10 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
   const plusMax = usesPos ? Math.max(0, Math.min(empty - 1, freeSlots(match) - (pos === 'Fark etmez' ? 1 : 0))) : empty - 1
   const joinOpts = { plus: Math.min(plus, plusMax), ...(usesPos && pos !== 'Fark etmez' ? { pos } : {}) }
   const openPos = openPositions(match)
+
+  // Padel: boş korta tıklayınca o tarafa katıl (taraf 'pos'ta tutulur)
+  const canPickSide = match.sport === 'padel' && match.mode !== 'team' && !guest && !isHost && !mine && !full
+  const pickSide = (side) => onToggle(match.id, { pos: side, plus: Math.min(plus, Math.max(0, empty - 1)) })
 
   let mainBtn = null
   if (isHost) mainBtn = <span className="hint">Bu maçı sen açtın. Linki paylaşarak eksikleri daha hızlı bulabilirsin.</span>
@@ -199,7 +247,9 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
           <div className="actions">
             {mainBtn}
             <button className="btn ghost big" onClick={() => onShare(match.id)}><ShareIcon /> Paylaş</button>
+            {!guest && !full && <button type="button" className="btn ghost big" onClick={() => setShowInvite((v) => !v)}>👋 Oyuncu davet et</button>}
           </div>
+          {showInvite && !guest && !full && <InvitePanel match={match} onInvite={onInvite} onClose={() => setShowInvite(false)} />}
           {isHost && (
             askCancel ? (
               <div className="cancel-box">
@@ -227,7 +277,8 @@ export default function MatchDetail({ match, onToggle, onShare, onCancel, onRemo
         </section>
 
         <section className="detail-board">
-          {match.sport === 'padel' && <PadelCourt match={match} />}
+          {match.sport === 'padel' && <PadelCourt match={match} onPick={pickSide} canPick={canPickSide} />}
+          {canPickSide && <p className="court-hint">Tarafını seçmek için korttaki boş yere dokun.</p>}
           <h2>{needText(match)}</h2>
           <ul className="roster">
             <li className="hostrow">
