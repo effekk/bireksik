@@ -149,7 +149,7 @@ input, select, textarea {
 }
 input[type='range'] { padding: 0; border: 0; accent-color: var(--pitch); }
 .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); padding: 5px; border-radius: 999px; }
+.seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 3px; background: var(--surface); padding: 5px; border-radius: 22px; }
 .seg-btn { min-height: 46px; border: 0; border-radius: 999px; background: transparent; font: 700 16px var(--font-body); color: var(--muted); cursor: pointer; }
 .seg-btn.on.padel { background: var(--court); color: #fff; }
 .seg-btn.on.halisaha { background: var(--pitch); color: #fff; }
@@ -776,3 +776,36 @@ html.reveal-ready .reveal.in { opacity: 1; transform: none; }
 .ip-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; max-height: 360px; overflow: auto; }
 .ip-list li { display: flex; align-items: center; gap: 10px; }
 .ip-list .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* --- Yeni sporlar: renkler (tenis / voleybol / basket) --- */
+.seg-btn.on.tenis { background: var(--tennis); color: #fff; }
+.seg-btn.on.voleybol { background: var(--volley); color: #fff; }
+.seg-btn.on.basket { background: var(--basket); color: #fff; }
+
+.sport-tag.tenis, .tenis .sport-tag { background: var(--tennis); }
+.sport-tag.voleybol, .voleybol .sport-tag { background: var(--volley); }
+.sport-tag.basket, .basket .sport-tag { background: var(--basket); }
+
+.tenis .need { color: var(--tennis); }
+.voleybol .need { color: var(--volley); }
+.basket .need { color: var(--basket); }
+
+.sport-card.on.tenis { border-color: var(--tennis); }
+.sport-card.on.voleybol { border-color: var(--volley); }
+.sport-card.on.basket { border-color: var(--basket); }
+.sport-card.on.tenis .sport-head { background: color-mix(in srgb, var(--tennis) 8%, var(--bg)); }
+.sport-card.on.voleybol .sport-head { background: color-mix(in srgb, var(--volley) 8%, var(--bg)); }
+.sport-card.on.basket .sport-head { background: color-mix(in srgb, var(--basket) 8%, var(--bg)); }
+.tenis .sport-head input { accent-color: var(--tennis); }
+.voleybol .sport-head input { accent-color: var(--volley); }
+.basket .sport-head input { accent-color: var(--basket); }
+
+.wel-sport.on.tenis { border-color: var(--tennis); }
+.wel-sport.on.voleybol { border-color: var(--volley); }
+.wel-sport.on.basket { border-color: var(--basket); }
+.wel-sport.on.tenis .wel-sport-head { background: color-mix(in srgb, var(--tennis) 8%, var(--bg)); }
+.wel-sport.on.voleybol .wel-sport-head { background: color-mix(in srgb, var(--volley) 8%, var(--bg)); }
+.wel-sport.on.basket .wel-sport-head { background: color-mix(in srgb, var(--basket) 8%, var(--bg)); }
+.tenis .wel-check.on { background: var(--tennis); border-color: var(--tennis); }
+.voleybol .wel-check.on { background: var(--volley); border-color: var(--volley); }
+.basket .wel-check.on { background: var(--basket); border-color: var(--basket); }

@@ -11,6 +11,9 @@
   --pitch: light-dark(#0e6b43, #2fb378);      /* ana yeşil: halı saha, butonlar */
   --pitch-deep: light-dark(#0a4d31, #0f3a27); /* üst bant zemini */
   --court: light-dark(#2457c5, #6b93ff);      /* padel mavisi */
+  --tennis: light-dark(#7a4fd0, #a98cf0);     /* tenis moru */
+  --volley: light-dark(#0e8f84, #34c4b6);     /* voleybol turkuazı */
+  --basket: light-dark(#d9602a, #f0875c);     /* basket turuncusu */
   --ball: #e4f24b;                            /* vurgu: top sarısı (az kullan) */
 
   /* Zemin ve yazı */

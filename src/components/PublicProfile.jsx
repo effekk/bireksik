@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { dayLabel, loadPerson, timeLabel } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
-import { LEVELS, USERS } from '../data/mock.js'
+import { LEVELS, SPORTS, USERS } from '../data/mock.js'
 import { VENUES } from '../data/venues.js'
+import { SPORT } from './MatchCard.jsx'
 import VenueSelect from './VenueSelect.jsx'
+
+// Yeni maç teklifinde spor seçilince kadro için makul varsayılan
+const OFFER_SIZE = { halisaha: 14, voleybol: 12, basket: 10, tenis: 2 }
 import { left, needText } from '../lib/match.js'
 import { instaUrl } from '../lib/util.js'
 import Avatar from './Avatar.jsx'
@@ -33,7 +37,7 @@ function OfferForm({ name, onSend, onClose, busy }) {
   const [size, setSize] = useState(14)
   const [note, setNote] = useState('')
 
-  const pickSport = (s) => { setSport(s); setPlace('') }
+  const pickSport = (s) => { setSport(s); setPlace(''); setSize(OFFER_SIZE[s] || 14) }
   const startsAt = new Date(`${day}T${time || '00:00'}`)
   const timeOk = startsAt.getTime() > Date.now() + 5 * 60000
   const ok = timeOk && place.trim()
@@ -41,20 +45,20 @@ function OfferForm({ name, onSend, onClose, busy }) {
   const submit = (e) => {
     e.preventDefault()
     if (!ok || busy) return
-    onSend({ sport, startsAt, place, level, size: sport === 'halisaha' ? Number(size) || 14 : 4, note: note.trim() })
+    onSend({ sport, startsAt, place, level, size: sport === 'padel' ? 4 : Number(size) || 2, note: note.trim() })
   }
 
   return (
     <form className="offer-form panel" onSubmit={submit}>
       <h3>{name} ile maç · teklif</h3>
       <div className="seg" role="radiogroup" aria-label="Spor">
-        {[['padel', 'Padel'], ['halisaha', 'Halı saha']].map(([k, l]) => (
-          <button type="button" key={k} className={'seg-btn ' + k + (sport === k ? ' on' : '')} onClick={() => pickSport(k)}>{l}</button>
+        {SPORTS.map((s) => (
+          <button type="button" key={s.key} className={'seg-btn ' + s.key + (sport === s.key ? ' on' : '')} onClick={() => pickSport(s.key)}>{s.label}</button>
         ))}
       </div>
-      {sport === 'halisaha' && (
+      {sport !== 'padel' && (
         <label>Toplam kaç kişi oynanacak?
-          <input type="number" min={4} max={22} value={size} onChange={(e) => setSize(e.target.value)} />
+          <input type="number" min={2} max={22} value={size} onChange={(e) => setSize(e.target.value)} />
           <span className="field-hint">Teklif kabul edilince ikiniz kadrodasınız, kalan yerler ilan olarak açılır.</span>
         </label>
       )}
@@ -122,7 +126,7 @@ function InvitePicker({ name, myMatches, onInvite, onClose, busy }) {
           <label key={m.id} className={'invite-opt' + (pick === m.id ? ' on' : '')}>
             <input type="radio" name="inv" checked={pick === m.id} onChange={() => setPick(m.id)} />
             <span>
-              <b>{m.sport === 'padel' ? 'Padel' : 'Halı saha'} · {m.place}</b>
+              <b>{SPORT[m.sport]?.label || m.sport} · {m.place}</b>
               <small>{m.day} {m.time} · {needText(m)}</small>
             </span>
           </label>
@@ -191,10 +195,11 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
         <h2>Sporlar</h2>
         {(u.sports || []).length === 0 && <p className="meta small">Belirtilmemiş.</p>}
         <ul className="pp-sports">
-          {(u.sports || []).includes('padel') && <li><b>Padel</b><span>{u.levelPadel}</span></li>}
-          {(u.sports || []).includes('halisaha') && (
-            <li><b>Halı saha</b><span>{u.levelHalisaha}{u.positions?.length ? ` · ${u.positions.join(', ')}` : ''}</span></li>
-          )}
+          {SPORTS.filter((s) => (u.sports || []).includes(s.key)).map((s) => {
+            const lvl = { padel: u.levelPadel, halisaha: u.levelHalisaha, tenis: u.levelTenis, voleybol: u.levelVoleybol, basket: u.levelBasket }[s.key]
+            const extra = s.key === 'halisaha' && u.positions?.length ? ` · ${u.positions.join(', ')}` : ''
+            return <li key={s.key}><b>{s.label}</b><span>{lvl || 'Orta'}{extra}</span></li>
+          })}
         </ul>
       </section>
 

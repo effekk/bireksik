@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LEVELS, MODES, POSITIONS } from '../data/mock.js'
+import { LEVELS, MODES, POSITIONS, SPORTS } from '../data/mock.js'
 import { VENUES } from '../data/venues.js'
 import VenueSelect from './VenueSelect.jsx'
 
@@ -21,6 +21,9 @@ function nextDays(n = 14) {
 const DEFAULTS = {
   padel: { size: 4, ready: 3, team: 2 },
   halisaha: { size: 14, ready: 10, team: 7 },
+  tenis: { size: 2, ready: 1, team: 2 },
+  voleybol: { size: 12, ready: 6, team: 6 },
+  basket: { size: 10, ready: 5, team: 5 },
 }
 
 export default function CreateMatch({ onCreate }) {
@@ -65,8 +68,8 @@ export default function CreateMatch({ onCreate }) {
       <h1>Maç aç</h1>
 
       <div className="seg" role="radiogroup" aria-label="Spor">
-        {[['padel', 'Padel'], ['halisaha', 'Halı saha']].map(([k, l]) => (
-          <button type="button" key={k} className={'seg-btn ' + k + (f.sport === k ? ' on' : '')} onClick={() => setSport(k)}>{l}</button>
+        {SPORTS.map((s) => (
+          <button type="button" key={s.key} className={'seg-btn ' + s.key + (f.sport === s.key ? ' on' : '')} onClick={() => setSport(s.key)}>{s.label}</button>
         ))}
       </div>
 
@@ -91,9 +94,9 @@ export default function CreateMatch({ onCreate }) {
         )
       ) : (
         <div className="two">
-          {f.sport === 'halisaha' && (
+          {f.sport !== 'padel' && (
             <label>Toplam kaç kişi oynanacak?
-              <input type="number" min={4} max={22} value={f.size} onChange={(e) => set('size', e.target.value)} />
+              <input type="number" min={2} max={22} value={f.size} onChange={(e) => set('size', e.target.value)} />
             </label>
           )}
           <label>Sende kaç kişi hazır? (sen dahil)

@@ -2,13 +2,9 @@ import { useState } from 'react'
 import MatchCard from './MatchCard.jsx'
 import Reminder from './Reminder.jsx'
 import { isFull } from '../lib/match.js'
-import { ME } from '../data/mock.js'
+import { ME, SPORTS } from '../data/mock.js'
 
-const FILTERS = [
-  { key: 'all', label: 'Tümü' },
-  { key: 'padel', label: 'Padel' },
-  { key: 'halisaha', label: 'Halı saha' },
-]
+const FILTERS = [{ key: 'all', label: 'Tümü' }, ...SPORTS]
 
 export default function Feed({ matches, onToggle, pending = [], reminders = [], onConfirm, onShare, mySports = ['padel', 'halisaha'], hideHero = false }) {
   // Tek spor oynayan biri listeyi direkt o sporla görür (istersen filtreden değiştirebilir)
@@ -24,7 +20,7 @@ export default function Feed({ matches, onToggle, pending = [], reminders = [], 
           <div>
             {(ME.name || '').trim() && <p className="greet">Merhaba {ME.name.split(' ')[0]} 👋</p>}
             <h1>Bir kişi mi eksik? BirEksik'te bulursun.</h1>
-            <p>Padele partner, rakip ya da halı sahaya eksik oyuncu.</p>
+            <p>Padel, halı saha, tenis, voleybol, basket — eksik oyuncunu bul.</p>
           </div>
           <div className="hero-stat">
             <span>Bu hafta</span>

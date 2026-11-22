@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import Logo from './Logo.jsx'
-import { GENDERS, POSITIONS } from '../data/mock.js'
+import { GENDERS, POSITIONS, SPORTS } from '../data/mock.js'
 import { cleanInstagram, SKILL_LEVELS } from '../lib/util.js'
 
-const SPORTS = [{ key: 'padel', label: 'Padel' }, { key: 'halisaha', label: 'Halı saha' }]
+const LEVEL_INIT = Object.fromEntries(SPORTS.map((s) => [s.key, 'Orta']))
 
 // İlk giriş karşılama + kurulum ekranı.
 // İsim ve oynanan sporlar burada bir kerede ayarlanır.
@@ -12,7 +12,7 @@ export default function Welcome({ onDone }) {
   const [age, setAge] = useState('')
   const [gender, setGender] = useState('')
   const [sports, setSports] = useState(['padel', 'halisaha'])
-  const [level, setLevel] = useState({ padel: 'Orta', halisaha: 'Orta' })
+  const [level, setLevel] = useState(LEVEL_INIT)
   const [positions, setPositions] = useState([])
   const [phone, setPhone] = useState('')
   const [instagram, setInstagram] = useState('')

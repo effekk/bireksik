@@ -7,6 +7,9 @@ import { isFull, myJoin, needText, openPositions, title } from '../lib/match.js'
 export const SPORT = {
   padel: { label: 'Padel', cls: 'padel' },
   halisaha: { label: 'Halı saha', cls: 'halisaha' },
+  tenis: { label: 'Tenis', cls: 'tenis' },
+  voleybol: { label: 'Voleybol', cls: 'voleybol' },
+  basket: { label: 'Basket', cls: 'basket' },
 }
 
 export const ShareIcon = () => (

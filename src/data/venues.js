@@ -27,4 +27,24 @@ export const VENUES = {
     { ilce: 'Çiğli', items: ['Çiğli Arena Halı Saha', 'Evka 5 Halı Saha', 'Organize Spor Tesisleri'] },
     { ilce: 'Gaziemir', items: ['Gaziemirgücü Halı Saha', 'Mustafa Yaman Halı Saha'] },
   ],
+  tenis: [
+    { ilce: 'Bornova', items: ['Parla Padel & Tenis', 'Es Tenis Kulübü'] },
+    { ilce: 'Balçova', items: ['Crea Tenis Kulübü'] },
+    { ilce: 'Konak', items: ['Kültürpark Tenis Kulübü', 'Küçük Kulüp (Alsancak)', 'İZTİK Tenis İhtisas Kulübü'] },
+    { ilce: 'Gaziemir', items: ['Altın Raket Tenis Kulübü'] },
+    { ilce: 'Çiğli', items: ['Can Tenis Spor Kulübü (Katip Çelebi Ü.)', 'Organize Park Tenis Kulübü'] },
+    { ilce: 'Güzelbahçe', items: ['Mavi Ege Tennis & Padel Club'] },
+    { ilce: 'Çeşme', items: ['Tiebreakers Tennis & Padel Club (Ilıca)'] },
+  ],
+  voleybol: [
+    { ilce: 'Konak', items: ['Celal Atik Spor Salonu (Kültürpark)', 'İzmir Atatürk Spor Salonu (Alsancak)'] },
+    { ilce: 'Bornova', items: ['Bornova Belediyesi Atatürk Spor Kompleksi'] },
+    { ilce: 'Karşıyaka', items: ['Mustafa Kemal Atatürk Karşıyaka Spor Salonu'] },
+  ],
+  basket: [
+    { ilce: 'Konak', items: ['Celal Atik Spor Salonu (Kültürpark)', 'Halkapınar Spor Kompleksi'] },
+    { ilce: 'Karşıyaka', items: ['Mustafa Kemal Atatürk Karşıyaka Spor Salonu'] },
+    { ilce: 'Bornova', items: ['Bornova Belediyesi Atatürk Spor Kompleksi'] },
+    { ilce: 'Çiğli', items: ['TEGV Çiğli Eğitim Parkı Basketbol Sahası'] },
+  ],
 }

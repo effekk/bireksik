@@ -21,6 +21,16 @@ export const GENDERS = ['Kadın', 'Erkek', 'Belirtmek istemiyorum']
 
 export const USERS = {}
 
+// Desteklenen sporlar (tek merkezden). Yeni spor eklemek için buraya ekle.
+export const SPORTS = [
+  { key: 'padel', label: 'Padel' },
+  { key: 'halisaha', label: 'Halı saha' },
+  { key: 'tenis', label: 'Tenis' },
+  { key: 'voleybol', label: 'Voleybol' },
+  { key: 'basket', label: 'Basket' },
+]
+export const SPORT_KEYS = SPORTS.map((s) => s.key)
+
 // Halı saha pozisyonları
 export const POSITIONS = ['Kaleci', 'Defans', 'Orta saha', 'Forvet']
 
@@ -39,6 +49,10 @@ export const MODES = {
     { key: 'players', label: 'Eksik oyuncu arıyorum' },
     { key: 'team', label: 'Rakip takım arıyorum' },
   ],
+  // Yeni sporlar: esnek kadro, tek mod (oyuncu ararsın, kişi sayısını sen belirlersin)
+  tenis: [{ key: 'players', label: 'Oyuncu / rakip arıyorum' }],
+  voleybol: [{ key: 'players', label: 'Oyuncu arıyorum' }],
+  basket: [{ key: 'players', label: 'Oyuncu arıyorum' }],
 }
 
 export const LEVELS = ['Yeni başladım', 'Başlangıç', 'Orta', 'İyi', 'İleri', 'Fark etmez']

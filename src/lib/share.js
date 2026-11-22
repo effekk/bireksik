@@ -3,8 +3,8 @@ import { isFull, needText } from './match.js'
 
 export const SITE_URL = (typeof window !== 'undefined' && window.location.origin) || 'https://bireksik.pages.dev'
 
-const EMOJI = { padel: '🎾', halisaha: '⚽' }
-const NAME = { padel: 'padel', halisaha: 'halı saha' }
+const EMOJI = { padel: '🎾', halisaha: '⚽', tenis: '🎾', voleybol: '🏐', basket: '🏀' }
+const NAME = { padel: 'padel', halisaha: 'halı saha', tenis: 'tenis', voleybol: 'voleybol', basket: 'basket' }
 
 export function matchLink(m) {
   return `${SITE_URL}/#mac-${m.id}`

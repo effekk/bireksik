@@ -1,4 +1,4 @@
-import { GENDERS, ME, POSITIONS, USERS } from '../data/mock.js'
+import { GENDERS, ME, POSITIONS, SPORTS, USERS } from '../data/mock.js'
 import { cleanInstagram, instaUrl, SKILL_LEVELS } from '../lib/util.js'
 import { loadMyProfileExtras } from '../lib/api.js'
 import { KUDOS, KUDOS_BY_KEY } from '../lib/kudos.js'
@@ -73,10 +73,6 @@ function KudosPanel({ notes }) {
   )
 }
 
-const SPORTS = [
-  { key: 'padel', label: 'Padel' },
-  { key: 'halisaha', label: 'Halı saha' },
-]
 const SKILL = SKILL_LEVELS
 
 // Oynadığın sporlar: sadece seçilenlerin bilgileri (seviye, pozisyon) profilde görünür
@@ -136,9 +132,10 @@ function SportPrefs({ prefs, onChange }) {
 }
 
 function sportLine(prefs) {
-  return prefs.sports.map((k) => {
-    if (k === 'padel') return `Padel: ${prefs.level.padel}`
-    return `Halı saha: ${prefs.level.halisaha}${prefs.positions.length ? ` (${prefs.positions.join(', ')})` : ''}`
+  return SPORTS.filter((s) => prefs.sports.includes(s.key)).map((s) => {
+    const lvl = prefs.level[s.key] || 'Orta'
+    const pos = s.key === 'halisaha' && prefs.positions.length ? ` (${prefs.positions.join(', ')})` : ''
+    return `${s.label}: ${lvl}${pos}`
   }).join(' · ')
 }
 
@@ -180,20 +177,19 @@ function InfoEditor({ onSave, onCancel }) {
 }
 
 // Yeni ilan bildirim tercihleri
+const SPORT_EMOJI = { padel: '🎾', halisaha: '⚽', tenis: '🎾', voleybol: '🏐', basket: '🏀' }
 function AlertPrefs({ alerts, onAlert }) {
   return (
     <section className="panel">
       <h2>İlan bildirimleri</h2>
       <p className="meta small">Seçtiğin sporda yeni bir maç açılınca sana bildirim ve e-posta gönderelim. İstediğin zaman buradan kapatabilirsin.</p>
       <div className="alert-list">
-        <label className="alert-row">
-          <span>🎾 Yeni <b>padel</b> ilanları açılınca haber ver</span>
-          <input type="checkbox" checked={!!alerts.padel} onChange={(e) => onAlert('padel', e.target.checked)} />
-        </label>
-        <label className="alert-row">
-          <span>⚽ Yeni <b>halı saha</b> ilanları açılınca haber ver</span>
-          <input type="checkbox" checked={!!alerts.halisaha} onChange={(e) => onAlert('halisaha', e.target.checked)} />
-        </label>
+        {SPORTS.map((s) => (
+          <label className="alert-row" key={s.key}>
+            <span>{SPORT_EMOJI[s.key]} Yeni <b>{s.label.toLowerCase()}</b> ilanları açılınca haber ver</span>
+            <input type="checkbox" checked={!!alerts[s.key]} onChange={(e) => onAlert(s.key, e.target.checked)} />
+          </label>
+        ))}
       </div>
     </section>
   )
