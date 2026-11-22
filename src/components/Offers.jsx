@@ -1,8 +1,9 @@
 import { dayLabel, timeLabel } from '../lib/api.js'
 import { USERS } from '../data/mock.js'
 import Avatar from './Avatar.jsx'
+import { SPORT as SPORT_META } from './MatchCard.jsx'
 
-const SPORT = { padel: 'Padel', halisaha: 'Halı saha' }
+const label = (k) => SPORT_META[k]?.label || k
 const STATUS = { accepted: 'Kabul edildi', declined: 'Reddedildi', cancelled: 'Geri çekildi' }
 
 function whenText(o) {
@@ -15,9 +16,9 @@ function whenText(o) {
 function detailLine(o) {
   if (o.kind === 'invite') {
     const m = o.match
-    return m ? `${SPORT[m.sport]} · ${m.place} · ${whenText(o)}` : 'İlan'
+    return m ? `${label(m.sport)} · ${m.place} · ${whenText(o)}` : 'İlan'
   }
-  return `${SPORT[o.sport]} · ${o.place} · ${whenText(o)}`
+  return `${label(o.sport)} · ${o.place} · ${whenText(o)}`
 }
 
 const kindTag = (o) => (o.kind === 'invite' ? 'Davet' : 'Teklif')

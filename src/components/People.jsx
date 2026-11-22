@@ -4,12 +4,21 @@ import { trError } from '../lib/supabase.js'
 import Avatar from './Avatar.jsx'
 import TrustBadge from './TrustBadge.jsx'
 import { topKudos } from '../lib/kudos.js'
+import { SPORTS } from '../data/mock.js'
+
+const SPORT_LABEL = Object.fromEntries(SPORTS.map((s) => [s.key, s.label]))
 
 // Kişinin oynadığı sporları ve seviyelerini tek satırda göster
 function sportSummary(u) {
-  return (u.sports || []).map((s) =>
-    s === 'padel' ? `Padel · ${u.levelPadel}` : `Halı saha · ${u.levelHalisaha}`
-  ).join('   ·   ')
+  const lvl = {
+    padel: u.levelPadel, halisaha: u.levelHalisaha, tenis: u.levelTenis,
+    voleybol: u.levelVoleybol, basket: u.levelBasket,
+  }
+  return (u.sports || []).map((s) => {
+    const label = SPORT_LABEL[s] || s
+    if (s === 'kosu') return label
+    return `${label} · ${lvl[s] || 'Orta'}`
+  }).join('   ·   ')
 }
 
 const lower = (s) => (s || '').toLocaleLowerCase('tr')

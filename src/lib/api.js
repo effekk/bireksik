@@ -1,7 +1,9 @@
 // Veritabanı ile konuşan bütün fonksiyonlar burada.
 // Veritabanındaki satırları, bileşenlerin kullandığı şekle çevirir.
 import { supabase } from './supabase.js'
-import { ME, USERS } from '../data/mock.js'
+import { ME, USERS, SPORTS } from '../data/mock.js'
+
+const SPORT_LABEL = Object.fromEntries(SPORTS.map((s) => [s.key, s.label]))
 
 // İletişim / geri bildirim gönder
 export async function sendFeedback({ kind, message, contact }) {
@@ -123,7 +125,7 @@ export async function loadAll() {
       return {
         id: m.id,
         sport: m.sport,
-        title: `${m.sport === 'padel' ? 'Padel' : 'Halı saha'} · ${m.place}`,
+        title: `${SPORT_LABEL[m.sport] || m.sport} · ${m.place}`,
         when: `${m.day} ${m.time}`,
         hoursAgo: (now - m.start) / 3600000,
         players,
