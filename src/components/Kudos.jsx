@@ -84,7 +84,7 @@ export default function Kudos({ match, done, reports, onSubmit, onReport }) {
   const others = match.players.filter((id) => id !== ME.id)
   const [vals, setVals] = useState(() => Object.fromEntries(others.map((id) => [id, { tags: [], note: '' }])))
   const closed = match.hoursAgo > KUDOS_WINDOW_HOURS
-  const left = Math.max(0, KUDOS_WINDOW_HOURS - match.hoursAgo)
+  const left = Math.max(1, Math.ceil(KUDOS_WINDOW_HOURS - match.hoursAgo))
   const chosen = others.filter((id) => vals[id].tags.length > 0).length
 
   if (done) {
