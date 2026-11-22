@@ -1,14 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MatchCard from './MatchCard.jsx'
 import Reminder from './Reminder.jsx'
 import { isFull } from '../lib/match.js'
-import { ME, SPORTS } from '../data/mock.js'
+import { ME, SPORTS, applyTheme } from '../data/mock.js'
 
 const FILTERS = [{ key: 'all', label: 'Tümü' }, ...SPORTS]
 
 export default function Feed({ matches, onToggle, pending = [], reminders = [], onConfirm, onShare, mySports = ['padel', 'halisaha'], hideHero = false }) {
   // Tek spor oynayan biri listeyi direkt o sporla görür (istersen filtreden değiştirebilir)
   const [filter, setFilter] = useState(mySports.length === 1 ? mySports[0] : 'all')
+  // Seçili spora göre site temasını yumuşakça kaydır
+  useEffect(() => {
+    applyTheme(filter === 'all' ? null : filter)
+    return () => applyTheme(null)
+  }, [filter])
   const list = matches.filter((m) => filter === 'all' || m.sport === filter)
   const open = matches.filter((m) => !isFull(m)).length
   const days = [...new Set(list.map((m) => m.day))]

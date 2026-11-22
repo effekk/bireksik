@@ -16,6 +16,7 @@
   --basket: light-dark(#d9602a, #f0875c);     /* basket turuncusu */
   --run: light-dark(#d4335a, #f0708c);        /* koşu kırmızısı */
   --ball: #e4f24b;                            /* vurgu: top sarısı (az kullan) */
+  --theme: var(--pitch);                      /* seçili spora göre kayan tema rengi */
 
   /* Zemin ve yazı */
   --bg: light-dark(#ffffff, #0c1511);

@@ -32,6 +32,22 @@ export const SPORTS = [
 ]
 export const SPORT_KEYS = SPORTS.map((s) => s.key)
 
+// Her sporun tema rengi (CSS değişkenine referans). Seçime göre site teması kayar.
+export const SPORT_THEME = {
+  padel: 'var(--court)',
+  halisaha: 'var(--pitch)',
+  tenis: 'var(--tennis)',
+  voleybol: 'var(--volley)',
+  basket: 'var(--basket)',
+  kosu: 'var(--run)',
+}
+export const THEME_DEFAULT = 'var(--pitch)'
+// Seçilen spora göre site temasını yumuşakça değiştirir (null → varsayılan yeşil)
+export function applyTheme(sport) {
+  if (typeof document === 'undefined') return
+  document.documentElement.style.setProperty('--theme', SPORT_THEME[sport] || THEME_DEFAULT)
+}
+
 // Halı saha pozisyonları
 export const POSITIONS = ['Kaleci', 'Defans', 'Orta saha', 'Forvet']
 

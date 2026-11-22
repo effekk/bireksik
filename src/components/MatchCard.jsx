@@ -52,7 +52,7 @@ export default function MatchCard({ match, onToggle, onShare }) {
         </div>
         <div className="card-body">
           <h3>{title(match)}</h3>
-          <p className="meta">{match.place}{kosu ? '' : ` · ${match.size} kişilik`} · {kosu ? `Pace ${match.level}` : match.level}</p>
+          <p className="meta">{match.place}{kosu ? '' : ` · ${match.size} kişilik`} · {kosu ? `Tempo ${match.level}` : match.level}</p>
           <div className="card-row">
             <Slots match={match} hideEmpty={kosu} />
             {!kosu && <span className={'need' + (full ? ' done' : '')}>{needText(match)}</span>}

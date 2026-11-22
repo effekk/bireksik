@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { LEVELS, MODES, POSITIONS, SPORTS } from '../data/mock.js'
+import { useState, useEffect } from 'react'
+import { LEVELS, MODES, POSITIONS, SPORTS, applyTheme } from '../data/mock.js'
 import { VENUES } from '../data/venues.js'
 import VenueSelect from './VenueSelect.jsx'
 
@@ -26,8 +26,8 @@ const DEFAULTS = {
   basket: { size: 10, ready: 5, team: 5 },
   kosu: { size: 6, ready: 1, team: 2 },
 }
-// Koşu temposu (dk/km): 4–15
-const PACES = Array.from({ length: 12 }, (_, i) => `${i + 4} dk/km`)
+// Koşu tempo aralıkları (dk/km)
+const PACES = ['4-7 dk/km', '8-11 dk/km', '12-15 dk/km']
 
 export default function CreateMatch({ onCreate }) {
   const days = nextDays()
@@ -39,9 +39,15 @@ export default function CreateMatch({ onCreate }) {
   const num = (v) => Number(v) || 0
 
   const setSport = (sport) =>
-    setF((s) => ({ ...s, sport, mode: 'players', place: '', wanted: {}, level: sport === 'kosu' ? '6 dk/km' : 'Orta', ...DEFAULTS[sport] }))
+    setF((s) => ({ ...s, sport, mode: 'players', place: '', wanted: {}, level: sport === 'kosu' ? '8-11 dk/km' : 'Orta', ...DEFAULTS[sport] }))
 
   const isKosu = f.sport === 'kosu'
+
+  // İlan açarken seçilen spora göre temayı kaydır
+  useEffect(() => {
+    applyTheme(f.sport)
+    return () => applyTheme(null)
+  }, [f.sport])
 
   // Takım modunda maç büyüklüğü takım × 2; oyuncu modunda aranan = toplam − hazır
   const isTeam = f.mode === 'team'
@@ -161,7 +167,7 @@ export default function CreateMatch({ onCreate }) {
             ? <input type="text" maxLength={80} value={f.place} onChange={(e) => set('place', e.target.value)} placeholder="Örn: Bostanlı sahili, Kültürpark" />
             : <VenueSelect list={VENUES[f.sport]} value={f.place} onChange={(v) => set('place', v)} />}
         </label>
-        <label>{isKosu ? 'Tempo (dk/km)' : 'Seviye'}
+        <label>{isKosu ? 'Tempo aralığı' : 'Seviye'}
           <select value={f.level} onChange={(e) => set('level', e.target.value)}>
             {(isKosu ? PACES : LEVELS).map((l) => <option key={l}>{l}</option>)}
           </select>
