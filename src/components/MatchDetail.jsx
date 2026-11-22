@@ -52,9 +52,10 @@ function PadelCourt({ match, onPick, canPick }) {
           const clickable = Boolean(canPick && onPick)
           return (
             <g key={i} onClick={clickable ? () => onPick(s.side) : undefined} style={clickable ? { cursor: 'pointer' } : undefined}>
-              {clickable && <circle cx={s.x} cy={s.y} r="27" fill="var(--ball)" fillOpacity=".14" />}
-              <circle cx={s.x} cy={s.y} r="23" fill="none" stroke="var(--ball)" strokeWidth="3" strokeDasharray="6 5" />
-              <text x={s.x} y={s.y + 8} textAnchor="middle" fontSize="24" fontWeight="700" fill="var(--ball)">+</text>
+              {clickable && <circle cx={s.x} cy={s.y} r="30" fill="var(--ball)" fillOpacity=".16" />}
+              <circle cx={s.x} cy={s.y} r="23" fill="none" stroke="var(--ball)" strokeWidth="3" strokeDasharray="6 5" pointerEvents="none" />
+              <text x={s.x} y={s.y + 8} textAnchor="middle" fontSize="24" fontWeight="700" fill="var(--ball)" pointerEvents="none">+</text>
+              {clickable && <circle cx={s.x} cy={s.y} r="48" fill="transparent" pointerEvents="all" />}
             </g>
           )
         }
