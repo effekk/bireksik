@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { dayLabel, loadPerson, removeNote, timeLabel } from '../lib/api.js'
+import { dayLabel, loadPerson, removeNote, reportNote, timeLabel } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
 import { LEVELS, ME, SPORTS, USERS } from '../data/mock.js'
 import { VENUES } from '../data/venues.js'
@@ -148,6 +148,8 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
   const [err, setErr] = useState('')
   const [panel, setPanel] = useState(null) // 'offer' | 'invite' | null
   const [delKey, setDelKey] = useState(null) // silme onayı bekleyen not
+  const [repKey, setRepKey] = useState(null) // bildirme onayı bekleyen not
+  const [reported, setReported] = useState({}) // bildirilen notlar
   const [working, setWorking] = useState(false)
 
   useEffect(() => {
@@ -170,6 +172,12 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
   const delNote = async (n) => {
     setWorking(true)
     try { await removeNote(n.matchId, n.from, u.id); setDelKey(null); const fresh = await loadPerson(id); setU(fresh) }
+    catch (e) { setErr(trError(e)) }
+    finally { setWorking(false) }
+  }
+  const repNote = async (n, key) => {
+    setWorking(true)
+    try { await reportNote(n.matchId, n.from, n.text); setRepKey(null); setReported((r) => ({ ...r, [key]: true })) }
     catch (e) { setErr(trError(e)) }
     finally { setWorking(false) }
   }
@@ -230,6 +238,7 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
               {u.notes.map((n, i) => {
                 const key = n.matchId + ':' + n.from
                 const canDel = ME.id === n.from || ME.dev
+                const canReport = ME.id !== n.from && !ME.dev
                 return (
                   <li key={key || i}>
                     <p>“{n.text}”</p>
@@ -241,6 +250,16 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
                       </span>
                     ) : (
                       <button className="note-del-btn" onClick={() => setDelKey(key)}>Notu sil</button>
+                    ))}
+                    {canReport && (reported[key] ? (
+                      <span className="note-reported">✓ Bildirildi</span>
+                    ) : repKey === key ? (
+                      <span className="note-del">
+                        <button className="link danger" disabled={working} onClick={() => repNote(n, key)}>{working ? 'Gönderiliyor…' : 'Bildir'}</button>
+                        <button className="link" onClick={() => setRepKey(null)}>Vazgeç</button>
+                      </span>
+                    ) : (
+                      <button className="note-del-btn" onClick={() => setRepKey(key)}>Bildir</button>
                     ))}
                   </li>
                 )

@@ -364,6 +364,14 @@ export async function removeNote(matchId, from, to) {
   return rpc('clear_kudos_note', { p_match: matchId, p_from: from, p_to: to })
 }
 
+// Uygunsuz bir notu bildir — uygulama mailine e-posta düşer (reports trigger'ı)
+export async function reportNote(matchId, fromUser, text) {
+  const { error } = await supabase.from('reports').insert({
+    match_id: matchId, reported: fromUser, reason: 'Uygunsuz yorum', detail: (text || '').slice(0, 300),
+  })
+  if (error) throw error
+}
+
 
 // ---------- Teklifler ve davetler ----------
 export async function loadOffers() {

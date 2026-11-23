@@ -831,3 +831,4 @@ html.reveal-ready .reveal.in { opacity: 1; transform: none; }
 .note-del .link { background: none; border: 0; padding: 0; cursor: pointer; font: 600 12px var(--font-body); color: var(--muted, #8a8f98); }
 .note-del .link.danger { color: #e0443e; }
 .note-del .link:disabled { opacity: .6; cursor: default; }
+.note-reported { display: inline-block; margin-top: 5px; font: 600 12px var(--font-body); color: #0e8f84; }
