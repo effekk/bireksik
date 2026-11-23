@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { dayLabel, loadPerson, timeLabel } from '../lib/api.js'
+import { dayLabel, loadPerson, removeNote, timeLabel } from '../lib/api.js'
 import { trError } from '../lib/supabase.js'
-import { LEVELS, SPORTS, USERS } from '../data/mock.js'
+import { LEVELS, ME, SPORTS, USERS } from '../data/mock.js'
 import { VENUES } from '../data/venues.js'
 import { SPORT } from './MatchCard.jsx'
 import VenueSelect from './VenueSelect.jsx'
@@ -147,6 +147,8 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
   const [u, setU] = useState(null)
   const [err, setErr] = useState('')
   const [panel, setPanel] = useState(null) // 'offer' | 'invite' | null
+  const [delKey, setDelKey] = useState(null) // silme onayı bekleyen not
+  const [working, setWorking] = useState(false)
 
   useEffect(() => {
     setU(null); setErr(''); setPanel(null)
@@ -165,6 +167,12 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
 
   const sendOffer = async (f) => { await onOffer(u.id, f); setPanel(null) }
   const sendInvite = async (matchId, note) => { await onInvite(u.id, matchId, note); setPanel(null) }
+  const delNote = async (n) => {
+    setWorking(true)
+    try { await removeNote(n.matchId, n.from, u.id); setDelKey(null); const fresh = await loadPerson(id); setU(fresh) }
+    catch (e) { setErr(trError(e)) }
+    finally { setWorking(false) }
+  }
 
   return (
     <div className="pub-profile">
@@ -219,12 +227,24 @@ export default function PublicProfile({ id, myMatches, onOffer, onInvite, busy }
           <>
             <h3 className="ksub">Oyunculardan notlar</h3>
             <ul className="knotes read">
-              {u.notes.map((n, i) => (
-                <li key={i}>
-                  <p>“{n.text}”</p>
-                  <small>{USERS[n.from]?.name || 'Bir oyuncu'} · {n.tags.map((t) => KUDOS_BY_KEY[t]?.label).filter(Boolean).join(', ')}</small>
-                </li>
-              ))}
+              {u.notes.map((n, i) => {
+                const key = n.matchId + ':' + n.from
+                const canDel = ME.id === n.from || ME.dev
+                return (
+                  <li key={key || i}>
+                    <p>“{n.text}”</p>
+                    <small>{USERS[n.from]?.name || 'Bir oyuncu'} · {n.tags.map((t) => KUDOS_BY_KEY[t]?.label).filter(Boolean).join(', ')}</small>
+                    {canDel && (delKey === key ? (
+                      <span className="note-del">
+                        <button className="link danger" disabled={working} onClick={() => delNote(n)}>{working ? 'Siliniyor…' : 'Sil, eminim'}</button>
+                        <button className="link" onClick={() => setDelKey(null)}>Vazgeç</button>
+                      </span>
+                    ) : (
+                      <button className="note-del-btn" onClick={() => setDelKey(key)}>Notu sil</button>
+                    ))}
+                  </li>
+                )
+              })}
             </ul>
           </>
         )}

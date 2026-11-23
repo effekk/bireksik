@@ -342,7 +342,7 @@ export async function loadPerson(id) {
   const [{ data: p, error }, { data: kc }, { data: notes }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
     supabase.from('kudos_counts').select('*').eq('user_id', id),
-    supabase.from('kudos').select('note, tags, from_user').eq('to_user', id).eq('note_public', true).order('created_at', { ascending: false }).limit(12),
+    supabase.from('kudos').select('match_id, note, tags, from_user').eq('to_user', id).eq('note_public', true).order('created_at', { ascending: false }).limit(12),
   ])
   if (error) throw error
   if (!p) throw new Error('Kişi bulunamadı.')
@@ -355,8 +355,13 @@ export async function loadPerson(id) {
     const { data: fp } = await supabase.from('profiles').select('id, name, photo_url').in('id', froms)
     for (const x of fp || []) USERS[x.id] = { id: x.id, name: x.name || 'Bir oyuncu', photo: x.photo_url || undefined }
   }
-  u.notes = (notes || []).filter((n) => n.note).map((n) => ({ from: n.from_user, tags: n.tags, text: n.note }))
+  u.notes = (notes || []).filter((n) => n.note).map((n) => ({ matchId: n.match_id, from: n.from_user, tags: n.tags, text: n.note }))
   return u
+}
+
+// Profildeki bir notu kaldır (notu yazan kişi veya geliştirici). Rozetler kalır, sadece not metni silinir.
+export async function removeNote(matchId, from, to) {
+  return rpc('clear_kudos_note', { p_match: matchId, p_from: from, p_to: to })
 }
 
 
