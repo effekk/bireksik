@@ -69,7 +69,7 @@ function PlayerCard({ user, value, onChange, reported, onReport }) {
           </div>
           {tags.length > 0 && (
             <label className="knote">
-              Kısa bir not (isteğe bağlı, sadece {user.name.split(' ')[0]} görür)
+              Kısa bir not (isteğe bağlı, {user.name.split(' ')[0]}'in profilinde görünür)
               <input maxLength={NOTE_MAX} placeholder="Örn: Yine oynayalım!" value={value.note} onChange={(e) => onChange({ ...value, note: e.target.value })} />
               <small>{value.note.length}/{NOTE_MAX}</small>
             </label>
@@ -109,7 +109,7 @@ export default function Kudos({ match, done, reports, onSubmit, onReport }) {
       ) : (
         <>
           <p className="kinfo">
-            Rozetler profillerde herkese görünür, notları sadece alan kişi görür. Takdirler Güven Puanını etkilemez.
+            Rozetler ve notlar kişinin profilinde herkese görünür. Takdirler Güven Puanını etkilemez.
             Takdir için {left} saatin kaldı.
           </p>
           <ul className="klist">
