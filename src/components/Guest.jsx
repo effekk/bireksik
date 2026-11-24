@@ -42,7 +42,7 @@ export function Landing({ matches, onAuth, prompt }) {
         <div className="wrap">
           <span className="w-live">Şu an İzmir'de {matches.length} açık maç</span>
           <h1>Bir kişi mi eksik?<br />BirEksik'te bulursun.</h1>
-          <p>İzmir'de padel partnerini, rakibini ya da halı sahaya eksik oyuncunu dakikalar içinde bul.</p>
+          <p>İzmir'de padel, halı saha, tenis, voleybol, basket partnerini ya da koşu eşlikçini dakikalar içinde bul.</p>
           <div className="w-cta">
             <button type="button" className="g-btn solid big" onClick={() => onAuth('signup')}>Üye ol — ücretsiz</button>
             <button type="button" className="g-btn ghost big" onClick={toList}>İlanlara göz at ↓</button>
@@ -54,7 +54,7 @@ export function Landing({ matches, onAuth, prompt }) {
       <section className="w-steps wrap reveal">
         <h2>Nasıl çalışır?</h2>
         <div className="w-step-row">
-          <div className="w-step"><i>🎾</i><b>Maç aç ya da bul</b><small>Padel veya halı saha — yerini ve saatini seç, ilanını aç.</small></div>
+          <div className="w-step"><i>🎾</i><b>Maç aç ya da bul</b><small>Padel, halı saha, tenis, voleybol, basket ya da koşu — yerini ve saatini seç, ilanını aç.</small></div>
           <div className="w-step"><i>👥</i><b>Kadronu doldur</b><small>Eksik oyuncular tek tek katılır; dolunca yedek sıraya geçer.</small></div>
           <div className="w-step"><i>📍</i><b>Sahada buluş</b><small>WhatsApp grubu ve Güven Puanı ile güvenle oynayın.</small></div>
         </div>
